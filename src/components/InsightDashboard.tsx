@@ -7,8 +7,11 @@ interface InsightDashboardProps {
 
 export function InsightDashboard({ analysis }: InsightDashboardProps) {
   const topClusters = analysis.clusters.slice(0, 6);
-  const averageRating =
-    analysis.reviews.reduce((sum, review) => sum + review.rating, 0) / analysis.reviews.length;
+  const hasReviews = analysis.reviews.length > 0;
+  const hasClusters = topClusters.length > 0;
+  const averageRating = hasReviews
+    ? analysis.reviews.reduce((sum, review) => sum + review.rating, 0) / analysis.reviews.length
+    : null;
 
   return (
     <section className="panel" aria-labelledby="intelligence-title">
@@ -22,39 +25,45 @@ export function InsightDashboard({ analysis }: InsightDashboardProps) {
         </div>
         <div className="metric-pill">
           <BarChart3 aria-hidden="true" size={18} />
-          {averageRating.toFixed(1)} avg rating
+          {averageRating === null ? 'No rating yet' : `${averageRating.toFixed(1)} avg rating`}
         </div>
       </div>
 
-      <div className="cluster-grid">
-        {topClusters.map((cluster) => (
-          <article className="cluster-card" key={cluster.id}>
-            <div className="cluster-card-header">
-              <h3>{cluster.name}</h3>
-              <span>{cluster.reviewCount} reviews</span>
-            </div>
-            <p>{cluster.description}</p>
-            <div className="cluster-meta">
-              <span>{Math.round(cluster.confidence * 100)}% confidence</span>
-              <span>{cluster.averageRating.toFixed(1)} rating</span>
-            </div>
-          </article>
-        ))}
-      </div>
+      {!hasReviews && <p className="section-copy">No review evidence available yet.</p>}
 
-      <div className="evidence-strip" aria-label="Representative review evidence">
-        {analysis.reviews.slice(1, 5).map((review) => (
-          <figure key={review.id}>
-            <Quote aria-hidden="true" size={16} />
-            <blockquote>
-              {review.title}: {review.body}
-            </blockquote>
-            <figcaption>
-              {review.rating} stars - v{review.appVersion}
-            </figcaption>
-          </figure>
-        ))}
-      </div>
+      {hasClusters && (
+        <div className="cluster-grid">
+          {topClusters.map((cluster) => (
+            <article className="cluster-card" key={cluster.id}>
+              <div className="cluster-card-header">
+                <h3>{cluster.name}</h3>
+                <span>{cluster.reviewCount} reviews</span>
+              </div>
+              <p>{cluster.description}</p>
+              <div className="cluster-meta">
+                <span>{Math.round(cluster.confidence * 100)}% confidence</span>
+                <span>{cluster.averageRating.toFixed(1)} rating</span>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+
+      {hasReviews && (
+        <div className="evidence-strip" aria-label="Representative review evidence">
+          {analysis.reviews.slice(1, 5).map((review) => (
+            <figure key={review.id}>
+              <Quote aria-hidden="true" size={16} />
+              <blockquote>
+                {review.title}: {review.body}
+              </blockquote>
+              <figcaption>
+                {review.rating} stars - v{review.appVersion}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

@@ -14,4 +14,14 @@ describe('InsightDashboard', () => {
     expect(screen.getByText(/Reliability and data-loss issues/i)).toBeInTheDocument();
     expect(screen.getByText(/Crashes during long drafts/i)).toBeInTheDocument();
   });
+
+  it('renders an empty state for analysis without reviews', () => {
+    const analysis = analyzeReviews([], '2026-05-28T08:00:00.000Z');
+
+    renderApp(<InsightDashboard analysis={analysis} />);
+
+    expect(screen.getByText(/No rating yet/i)).toBeInTheDocument();
+    expect(screen.getByText(/No review evidence available yet/i)).toBeInTheDocument();
+    expect(screen.queryByText(/NaN avg rating/i)).not.toBeInTheDocument();
+  });
 });
