@@ -559,8 +559,37 @@ h1 {
 
 .brief-header {
   display: flex;
+  align-items: start;
   justify-content: space-between;
   gap: 16px;
+}
+
+.brief-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.brief-download {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 8px;
+  color: #f6f4ef;
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+}
+
+.brief-download:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.brief-download:focus-visible {
+  outline: 3px solid #8dc9b6;
+  outline-offset: 2px;
 }
 
 .brief-panel .eyebrow,
@@ -614,5 +643,14 @@ h1 {
   .workflow-list,
   .brief-grid {
     grid-template-columns: 1fr;
+  }
+
+  .brief-header {
+    align-items: start;
+  }
+
+  .brief-actions {
+    flex-direction: column-reverse;
+    align-items: end;
   }
 }

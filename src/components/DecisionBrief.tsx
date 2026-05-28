@@ -1,4 +1,4 @@
-import { FileText } from 'lucide-react';
+import { Download, FileText } from 'lucide-react';
 import type { AnalysisResult } from '../domain/types';
 
 interface DecisionBriefProps {
@@ -24,6 +24,26 @@ export function DecisionBrief({ analysis }: DecisionBriefProps) {
     );
   }
 
+  function downloadBrief() {
+    const markdown = [
+      '# ReviewRoadmap Decision Brief',
+      `## Problem signal\n${topCluster.description}`,
+      `## Recommended decision\n${topCard.recommendation}`,
+      `## User scenario\n${topCard.userScenario}`,
+      `## Evidence\n${topCard.evidenceQuotes[0] ?? 'No direct evidence quote available.'}`,
+      `## Next experiment\n${topCard.validationExperiment}`
+    ].join('\n\n');
+    const url = URL.createObjectURL(new Blob([markdown], { type: 'text/markdown;charset=utf-8' }));
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = 'reviewroadmap-decision-brief.md';
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <section className="brief-panel" aria-labelledby="brief-title">
       <div className="brief-header">
@@ -31,7 +51,13 @@ export function DecisionBrief({ analysis }: DecisionBriefProps) {
           <p className="eyebrow">Portfolio-ready artifact</p>
           <h2 id="brief-title">One-page product decision brief</h2>
         </div>
-        <FileText aria-hidden="true" size={24} />
+        <div className="brief-actions">
+          <button className="brief-download" type="button" onClick={downloadBrief}>
+            <Download aria-hidden="true" size={16} />
+            Download brief
+          </button>
+          <FileText aria-hidden="true" size={24} />
+        </div>
       </div>
 
       <div className="brief-grid">

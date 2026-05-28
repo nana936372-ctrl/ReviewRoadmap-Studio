@@ -15,6 +15,7 @@ describe('App', () => {
     expect(screen.getByLabelText(/Category/i)).toHaveValue('ai-writing');
     expect(screen.getByLabelText(/Time window/i)).toHaveValue('may-2026');
     expect(screen.getByRole('button', { name: /Analyze Reviews/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Download brief/i })).toBeInTheDocument();
     expect(screen.getByText(/18 reviews analyzed/i)).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /Review intelligence/i })).toBeInTheDocument();
 
