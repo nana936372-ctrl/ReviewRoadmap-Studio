@@ -130,6 +130,11 @@ h1 {
   background: #fbfcfa;
 }
 
+.url-row:focus-within {
+  border-color: #1f6f5b;
+  box-shadow: 0 0 0 3px rgba(31, 111, 91, 0.16);
+}
+
 .url-row input {
   width: 100%;
   border: 0;

@@ -24,6 +24,8 @@ export function InputPanel({ appUrl, onAppUrlChange, onAnalyze }: InputPanelProp
         <Search aria-hidden="true" size={18} />
         <input
           id="app-url"
+          type="url"
+          inputMode="url"
           value={appUrl}
           onChange={(event) => onAppUrlChange(event.target.value)}
         />
