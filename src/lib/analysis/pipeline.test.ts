@@ -9,6 +9,19 @@ describe('analyzeReviews', () => {
     expect(result.signals).toHaveLength(18);
     expect(result.clusters.length).toBeGreaterThanOrEqual(5);
     expect(result.roadmapCards).toHaveLength(3);
+    expect(result.roadmapCards.map((card) => card.type)).toEqual(['fix', 'improve', 'explore']);
     expect(result.generatedAt).toBe('2026-05-28T08:00:00.000Z');
+  });
+
+  it('returns an empty analysis result when there are no normalized reviews', () => {
+    const result = analyzeReviews([], '2026-05-28T08:00:00.000Z');
+
+    expect(result).toEqual({
+      reviews: [],
+      signals: [],
+      clusters: [],
+      roadmapCards: [],
+      generatedAt: '2026-05-28T08:00:00.000Z'
+    });
   });
 });

@@ -1,7 +1,7 @@
 export const aiWorkflowStages = [
   {
     name: 'Normalize reviews',
-    description: 'Clean title and body text, remove empty reviews, and preserve source text for citation.'
+    description: 'Clean title and body text, remove empty reviews, and keep review text available for citation.'
   },
   {
     name: 'Classify signals',
@@ -9,7 +9,7 @@ export const aiWorkflowStages = [
   },
   {
     name: 'Cluster insights',
-    description: 'Group semantically related reviews into product-language insight clusters with representative evidence.'
+    description: 'Group related signal labels into product-language insight clusters with representative evidence.'
   },
   {
     name: 'Score opportunities',
