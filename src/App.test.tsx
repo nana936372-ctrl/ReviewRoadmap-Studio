@@ -16,7 +16,7 @@ describe('App', () => {
     expect(appUrlInput).toHaveValue('https://apps.apple.com/app/draftly-ai-writing/id0000000000');
     expect(screen.getByRole('button', { name: /Analyze Reviews/i })).toBeInTheDocument();
     expect(screen.getByText(/18 reviews analyzed/i)).toBeInTheDocument();
-    expect(screen.getByText(/Roadmap decisions/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Review intelligence/i })).toBeInTheDocument();
 
     await user.clear(appUrlInput);
     await user.type(appUrlInput, 'https://apps.apple.com/app/example/id1234567890');

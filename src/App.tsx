@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { InsightDashboard } from './components/InsightDashboard';
 import { InputPanel } from './components/InputPanel';
 import { sampleReviews } from './data/sampleReviews';
 import { analyzeReviews } from './lib/analysis/pipeline';
@@ -36,13 +37,7 @@ export default function App() {
         onAnalyze={() => setAnalysisRunCount((count) => count + 1)}
       />
 
-      <section className="panel">
-        <p className="eyebrow">Output preview</p>
-        <h2>Roadmap decisions</h2>
-        <p className="section-copy">
-          The next tasks replace this preview with the dashboard, roadmap cards, and decision brief.
-        </p>
-      </section>
+      <InsightDashboard analysis={analysis} />
     </main>
   );
 }
