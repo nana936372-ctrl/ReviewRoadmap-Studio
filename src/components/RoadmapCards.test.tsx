@@ -17,6 +17,15 @@ describe('RoadmapCards', () => {
     expect(screen.getByText(/Stabilize draft saving/i)).toBeInTheDocument();
     expect(screen.getAllByText(/Validation experiment/i)).toHaveLength(analysis.roadmapCards.length);
   });
+
+  it('renders an empty state without the roadmap grid when there are no cards', () => {
+    renderApp(<RoadmapCards cards={[]} />);
+
+    expect(
+      screen.getByText(/No roadmap decisions yet. Add review evidence to generate recommendations./i)
+    ).toBeInTheDocument();
+    expect(document.querySelector('.roadmap-grid')).not.toBeInTheDocument();
+  });
 });
 
 describe('DecisionBrief', () => {

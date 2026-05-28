@@ -45,7 +45,7 @@ export function DecisionBrief({ analysis }: DecisionBriefProps) {
         </article>
         <article>
           <h3>Evidence</h3>
-          <p>{topCard.evidenceQuotes[0]}</p>
+          <p>{topCard.evidenceQuotes[0] ?? 'No direct evidence quote available.'}</p>
         </article>
         <article>
           <h3>Next experiment</h3>

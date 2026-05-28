@@ -1,12 +1,9 @@
-import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { fireEvent, screen } from '@testing-library/react';
 import App from './App';
 import { renderApp } from './test/render';
 
 describe('App', () => {
-  it('renders the input workflow and generated analysis sections', async () => {
-    const user = userEvent.setup();
-
+  it('renders the input workflow and generated analysis sections', () => {
     renderApp(<App />);
     const appUrlInput = screen.getByLabelText(/App Store URL/i);
 
@@ -18,8 +15,7 @@ describe('App', () => {
     expect(screen.getByText(/18 reviews analyzed/i)).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /Review intelligence/i })).toBeInTheDocument();
 
-    await user.clear(appUrlInput);
-    await user.type(appUrlInput, 'https://apps.apple.com/app/example/id1234567890');
+    fireEvent.change(appUrlInput, { target: { value: 'https://apps.apple.com/app/example/id1234567890' } });
 
     expect(appUrlInput).toHaveValue('https://apps.apple.com/app/example/id1234567890');
   });

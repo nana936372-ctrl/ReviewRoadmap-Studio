@@ -24,49 +24,53 @@ export function RoadmapCards({ cards }: RoadmapCardsProps) {
         </div>
       </div>
 
-      <div className="roadmap-grid">
-        {cards.map((card) => (
-          <article className={`roadmap-card roadmap-card-${card.type}`} key={card.id}>
-            <div className="card-kicker">
-              <span>{TYPE_LABELS[card.type]}</span>
-              <strong>{card.priorityScore}</strong>
-            </div>
-            <h3>{card.title}</h3>
-            <p>{card.recommendation}</p>
+      {cards.length === 0 ? (
+        <p className="section-copy">No roadmap decisions yet. Add review evidence to generate recommendations.</p>
+      ) : (
+        <div className="roadmap-grid">
+          {cards.map((card) => (
+            <article className={`roadmap-card roadmap-card-${card.type}`} key={card.id}>
+              <div className="card-kicker">
+                <span>{TYPE_LABELS[card.type]}</span>
+                <strong>{card.priorityScore}</strong>
+              </div>
+              <h3>{card.title}</h3>
+              <p>{card.recommendation}</p>
 
-            <dl className="decision-list">
-              <div>
-                <dt>
-                  <Gauge aria-hidden="true" size={15} /> Metric
-                </dt>
-                <dd>{card.targetMetric}</dd>
-              </div>
-              <div>
-                <dt>
-                  <FlaskConical aria-hidden="true" size={15} /> Validation experiment
-                </dt>
-                <dd>{card.validationExperiment}</dd>
-              </div>
-              <div>
-                <dt>
-                  <ShieldCheck aria-hidden="true" size={15} /> Risk
-                </dt>
-                <dd>{card.risks}</dd>
-              </div>
-            </dl>
+              <dl className="decision-list">
+                <div>
+                  <dt>
+                    <Gauge aria-hidden="true" size={15} /> Metric
+                  </dt>
+                  <dd>{card.targetMetric}</dd>
+                </div>
+                <div>
+                  <dt>
+                    <FlaskConical aria-hidden="true" size={15} /> Validation experiment
+                  </dt>
+                  <dd>{card.validationExperiment}</dd>
+                </div>
+                <div>
+                  <dt>
+                    <ShieldCheck aria-hidden="true" size={15} /> Risk
+                  </dt>
+                  <dd>{card.risks}</dd>
+                </div>
+              </dl>
 
-            <div className="evidence-list">
-              <div className="evidence-title">
-                <Activity aria-hidden="true" size={15} />
-                Evidence
+              <div className="evidence-list">
+                <div className="evidence-title">
+                  <Activity aria-hidden="true" size={15} />
+                  Evidence
+                </div>
+                {card.evidenceQuotes.slice(0, 2).map((quote) => (
+                  <blockquote key={quote}>{quote}</blockquote>
+                ))}
               </div>
-              {card.evidenceQuotes.slice(0, 2).map((quote) => (
-                <blockquote key={quote}>{quote}</blockquote>
-              ))}
-            </div>
-          </article>
-        ))}
-      </div>
+            </article>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
