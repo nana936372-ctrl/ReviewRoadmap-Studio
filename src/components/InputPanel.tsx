@@ -1,4 +1,4 @@
-import { Search, Sparkles } from 'lucide-react';
+import { CalendarDays, FileUp, Search, Sparkles, Tags } from 'lucide-react';
 
 interface InputPanelProps {
   appUrl: string;
@@ -29,6 +29,50 @@ export function InputPanel({ appUrl, onAppUrlChange, onAnalyze }: InputPanelProp
           value={appUrl}
           onChange={(event) => onAppUrlChange(event.target.value)}
         />
+      </div>
+
+      <div className="input-grid" aria-label="Review analysis settings">
+        <div>
+          <label className="field-label compact" htmlFor="review-category">
+            Category
+          </label>
+          <div className="control-row">
+            <Tags aria-hidden="true" size={18} />
+            <select id="review-category" defaultValue="ai-writing">
+              <option value="ai-writing">AI writing app</option>
+              <option value="productivity">Productivity app</option>
+              <option value="learning">Language learning app</option>
+              <option value="knowledge">Knowledge management app</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label className="field-label compact" htmlFor="time-window">
+            Time window
+          </label>
+          <div className="control-row">
+            <CalendarDays aria-hidden="true" size={18} />
+            <select id="time-window" defaultValue="may-2026">
+              <option value="may-2026">May 2026 sample</option>
+              <option value="last-30">Last 30 days</option>
+              <option value="last-90">Last 90 days</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label className="field-label compact" htmlFor="review-sample">
+            Review sample
+          </label>
+          <div className="control-row">
+            <FileUp aria-hidden="true" size={18} />
+            <input id="review-sample" type="file" accept=".csv,.json,.txt" aria-describedby="review-sample-note" />
+          </div>
+          <p id="review-sample-note" className="field-note">
+            Optional upload control; this demo uses prepared sample data.
+          </p>
+        </div>
       </div>
 
       <div className="input-actions">

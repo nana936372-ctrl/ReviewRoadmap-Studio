@@ -44,6 +44,11 @@ describe('generateRoadmapCards', () => {
     expect(cards.map((card) => card.type)).toEqual(['fix', 'improve', 'explore']);
     expect(cards[0].title).toBe('Stabilize draft saving and export reliability');
     expect(cards[0].evidenceQuotes).toEqual(['Lost work: The draft disappeared.']);
+    expect(cards[0].userScenario).toBe('Users finishing client work.');
     expect(cards[0].priorityScore).toBeGreaterThan(cards[2].priorityScore);
+  });
+
+  it('returns an empty card list for empty clusters', () => {
+    expect(generateRoadmapCards([])).toEqual([]);
   });
 });

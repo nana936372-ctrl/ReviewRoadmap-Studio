@@ -44,6 +44,10 @@ export function DecisionBrief({ analysis }: DecisionBriefProps) {
           <p>{topCard.recommendation}</p>
         </article>
         <article>
+          <h3>User scenario</h3>
+          <p>{topCard.userScenario}</p>
+        </article>
+        <article>
           <h3>Evidence</h3>
           <p>{topCard.evidenceQuotes[0] ?? 'No direct evidence quote available.'}</p>
         </article>

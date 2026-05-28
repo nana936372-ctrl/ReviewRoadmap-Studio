@@ -60,6 +60,7 @@ export interface RoadmapCard {
     effort: number;
   };
   evidenceQuotes: string[];
+  userScenario: string;
   targetMetric: string;
   validationExperiment: string;
   risks: string;

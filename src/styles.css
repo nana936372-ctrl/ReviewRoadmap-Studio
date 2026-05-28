@@ -119,6 +119,10 @@ h1 {
   font-weight: 700;
 }
 
+.field-label.compact {
+  margin-top: 0;
+}
+
 .url-row {
   display: grid;
   grid-template-columns: 20px 1fr;
@@ -153,6 +157,51 @@ h1 {
   font-size: 0.92rem;
 }
 
+.input-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.control-row {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 10px;
+  align-items: center;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid #cad8cf;
+  border-radius: 8px;
+  background: #fbfcfa;
+}
+
+.control-row:focus-within {
+  border-color: #1f6f5b;
+  box-shadow: 0 0 0 3px rgba(31, 111, 91, 0.16);
+}
+
+.control-row input,
+.control-row select {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: #16201b;
+  background: transparent;
+}
+
+.control-row input[type="file"] {
+  font-size: 0.86rem;
+}
+
+.field-note {
+  margin: 8px 0 0;
+  color: #6a756e;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
 .primary-button {
   display: inline-flex;
   gap: 8px;
@@ -180,6 +229,10 @@ h1 {
   .hero-band {
     grid-template-columns: 1fr;
     padding: 28px;
+  }
+
+  .input-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -284,6 +337,31 @@ h1 {
   font-size: 0.82rem;
 }
 
+.insight-table-wrap {
+  margin-top: 18px;
+  overflow-x: auto;
+}
+
+.insight-table {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: collapse;
+  color: #34423a;
+  font-size: 0.9rem;
+}
+
+.insight-table th,
+.insight-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e1e7e1;
+  text-align: left;
+}
+
+.insight-table th {
+  color: #20362c;
+  font-weight: 900;
+}
+
 @media (max-width: 960px) {
   .cluster-grid,
   .evidence-strip {
@@ -364,6 +442,34 @@ h1 {
 .decision-list dd {
   color: #58665e;
   line-height: 1.55;
+}
+
+.card-context,
+.score-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.card-context span,
+.score-breakdown span {
+  padding: 7px 9px;
+  border-radius: 8px;
+  color: #315044;
+  background: #edf4ef;
+  font-size: 0.84rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.card-context span:last-child {
+  flex-basis: 100%;
+  font-weight: 700;
+}
+
+.score-breakdown strong {
+  color: #17271f;
 }
 
 .decision-list {

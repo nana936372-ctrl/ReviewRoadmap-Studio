@@ -12,7 +12,7 @@ Small app teams often have user reviews but limited product research capacity. A
 2. Reviews are normalized and classified into product signals.
 3. Signals are clustered into PM-readable insight groups.
 4. The system generates Fix, Improve, and Explore roadmap cards.
-5. Each card includes evidence, a metric, a validation experiment, risks, and confidence.
+5. Each card includes evidence, scoring factors, a user scenario, a metric, a validation experiment, risks, and confidence.
 
 ## Local Development
 

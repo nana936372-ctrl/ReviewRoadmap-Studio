@@ -39,6 +39,7 @@ function createCard(type: RoadmapType, cluster: InsightCluster): RoadmapCard {
       priorityScore: priorityScore(factors),
       scoringFactors: factors,
       evidenceQuotes: cluster.representativeQuotes,
+      userScenario: cluster.suspectedUserScenario,
       targetMetric: 'Reduce one-star reliability complaints per 100 reviews.',
       validationExperiment: 'Ship auto-save recovery messaging to 25% of users and compare lost-draft support mentions for two weeks.',
       risks: 'This may delay visible feature work, but trust issues can suppress retention and paid conversion.',
@@ -57,6 +58,7 @@ function createCard(type: RoadmapType, cluster: InsightCluster): RoadmapCard {
       priorityScore: priorityScore(factors),
       scoringFactors: factors,
       evidenceQuotes: cluster.representativeQuotes,
+      userScenario: cluster.suspectedUserScenario,
       targetMetric: 'Increase completed exports per activated user.',
       validationExperiment: 'Prototype one export path and measure whether users who export return within seven days.',
       risks: 'Export breadth can sprawl, so the first version should support one workflow with strong evidence.',
@@ -74,6 +76,7 @@ function createCard(type: RoadmapType, cluster: InsightCluster): RoadmapCard {
     priorityScore: priorityScore(factors),
     scoringFactors: factors,
     evidenceQuotes: cluster.representativeQuotes,
+    userScenario: cluster.suspectedUserScenario,
     targetMetric: 'Improve first-session draft completion rate.',
     validationExperiment: 'A/B test guided setup against the current template picker for new users.',
     risks: 'Guidance can feel restrictive to advanced users, so provide a skip path and keep the first question lightweight.',
@@ -82,6 +85,8 @@ function createCard(type: RoadmapType, cluster: InsightCluster): RoadmapCard {
 }
 
 export function generateRoadmapCards(clusters: InsightCluster[]): RoadmapCard[] {
+  if (clusters.length === 0) return [];
+
   const selected = {
     fix: findCluster(clusters, ['bug', 'retention_risk', 'pricing_friction']),
     improve: findCluster(clusters, ['feature_request', 'delight']),

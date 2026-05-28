@@ -15,6 +15,9 @@ describe('RoadmapCards', () => {
     expect(screen.getByText('Improve')).toBeInTheDocument();
     expect(screen.getByText('Explore')).toBeInTheDocument();
     expect(screen.getByText(/Stabilize draft saving/i)).toBeInTheDocument();
+    expect(screen.getByText(/Users trying to finish important writing work/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Business impact/i)).toHaveLength(analysis.roadmapCards.length);
+    expect(screen.getAllByText(/95% confidence/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/Validation experiment/i)).toHaveLength(analysis.roadmapCards.length);
   });
 

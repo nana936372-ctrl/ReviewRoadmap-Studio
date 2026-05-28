@@ -11,6 +11,14 @@ const TYPE_LABELS: Record<RoadmapCard['type'], string> = {
   explore: 'Explore'
 };
 
+const FACTOR_LABELS: Record<keyof RoadmapCard['scoringFactors'], string> = {
+  frequency: 'Frequency',
+  severity: 'Severity',
+  businessImpact: 'Business impact',
+  confidence: 'Confidence',
+  effort: 'Effort'
+};
+
 export function RoadmapCards({ cards }: RoadmapCardsProps) {
   return (
     <section className="panel" aria-labelledby="roadmap-title">
@@ -36,6 +44,18 @@ export function RoadmapCards({ cards }: RoadmapCardsProps) {
               </div>
               <h3>{card.title}</h3>
               <p>{card.recommendation}</p>
+              <div className="card-context">
+                <span>{Math.round(card.confidence * 100)}% confidence</span>
+                <span>{card.userScenario}</span>
+              </div>
+
+              <div className="score-breakdown" aria-label={`${TYPE_LABELS[card.type]} scoring factors`}>
+                {Object.entries(card.scoringFactors).map(([key, value]) => (
+                  <span key={key}>
+                    {FACTOR_LABELS[key as keyof RoadmapCard['scoringFactors']]} <strong>{value}/5</strong>
+                  </span>
+                ))}
+              </div>
 
               <dl className="decision-list">
                 <div>
