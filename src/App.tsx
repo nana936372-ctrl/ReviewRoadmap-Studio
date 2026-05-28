@@ -1,6 +1,9 @@
 import { useMemo, useState } from 'react';
+import { AiWorkflow } from './components/AiWorkflow';
+import { DecisionBrief } from './components/DecisionBrief';
 import { InsightDashboard } from './components/InsightDashboard';
 import { InputPanel } from './components/InputPanel';
+import { RoadmapCards } from './components/RoadmapCards';
 import { sampleReviews } from './data/sampleReviews';
 import { analyzeReviews } from './lib/analysis/pipeline';
 
@@ -38,6 +41,9 @@ export default function App() {
       />
 
       <InsightDashboard analysis={analysis} />
+      <RoadmapCards cards={analysis.roadmapCards} />
+      <AiWorkflow />
+      <DecisionBrief analysis={analysis} />
     </main>
   );
 }
