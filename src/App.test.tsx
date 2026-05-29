@@ -18,10 +18,26 @@ describe('App', () => {
     expect(screen.getByRole('button', { name: /Download brief/i })).toBeInTheDocument();
     expect(screen.getByText(/18 reviews analyzed/i)).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /Review intelligence/i })).toBeInTheDocument();
+    expect(screen.queryByText(/Priority formula/i)).not.toBeInTheDocument();
 
     fireEvent.change(appUrlInput, { target: { value: 'https://apps.apple.com/app/example/id1234567890' } });
 
     expect(appUrlInput).toHaveValue('https://apps.apple.com/app/example/id1234567890');
+  });
+
+  it('opens a focused score detail page from a roadmap score', () => {
+    renderApp(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Explain priority score: 80/i }));
+
+    expect(screen.getByRole('heading', { name: /Priority score details/i })).toBeInTheDocument();
+    expect(screen.getByText(/Priority formula/i)).toBeInTheDocument();
+    expect(screen.getByText(/Recommendation dimensions/i)).toBeInTheDocument();
+    expect(screen.getByText(/Metric dimensions/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Back to overview/i }));
+
+    expect(screen.getByRole('heading', { name: /Roadmap decisions/i })).toBeInTheDocument();
   });
 
   it('switches the product interface to Chinese', () => {
@@ -35,7 +51,7 @@ describe('App', () => {
     expect(screen.getByRole('heading', { name: /路线图决策/i })).toBeInTheDocument();
     expect(screen.getByText(/稳定草稿保存与导出可靠性/i)).toBeInTheDocument();
     expect(screen.getAllByText(/评估维度/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/优先级公式/i).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/优先级公式/i)).not.toBeInTheDocument();
     expect(screen.getAllByText(/评估方式/i).length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: /下载 Brief/i })).toBeInTheDocument();
   });

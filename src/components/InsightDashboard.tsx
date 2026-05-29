@@ -1,35 +1,10 @@
 import { BarChart3, Quote } from 'lucide-react';
-import type { AnalysisResult, ReviewSignal, SignalLabel } from '../domain/types';
+import type { AnalysisResult, SignalLabel } from '../domain/types';
 import type { AppCopy } from '../i18n/copy';
 
 interface InsightDashboardProps {
   analysis: AnalysisResult;
   copy: AppCopy['dashboard'];
-}
-
-function reviewDimensions(signal: ReviewSignal, review: AnalysisResult['reviews'][number], copy: AppCopy['dashboard']) {
-  return [
-    {
-      label: copy.reviewDimensionLabels.starRating,
-      value: copy.stars(review.rating)
-    },
-    {
-      label: copy.reviewDimensionLabels.productSignals,
-      value: signal.labels.map((label) => copy.signalLabels[label]).join(', ')
-    },
-    {
-      label: copy.reviewDimensionLabels.sentiment,
-      value: copy.sentimentValues[signal.sentiment]
-    },
-    {
-      label: copy.reviewDimensionLabels.urgency,
-      value: copy.urgencyValues[signal.urgency]
-    },
-    {
-      label: copy.reviewDimensionLabels.evidenceUse,
-      value: copy.evidenceUseValue
-    }
-  ];
 }
 
 export function InsightDashboard({ analysis, copy }: InsightDashboardProps) {
@@ -127,18 +102,6 @@ export function InsightDashboard({ analysis, copy }: InsightDashboardProps) {
                 {copy.stars(review.rating)} - {signal.labels.map((label) => copy.signalLabels[label]).join(', ')} - v
                 {review.appVersion}
               </figcaption>
-              <details className="review-evaluation" open>
-                <summary>{copy.reviewEvaluationTitle}</summary>
-                <p>{copy.reviewEvaluationHint}</p>
-                <dl>
-                  {reviewDimensions(signal, review, copy).map((dimension) => (
-                    <div key={dimension.label}>
-                      <dt>{dimension.label}</dt>
-                      <dd>{dimension.value}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </details>
             </figure>
           ))}
         </div>

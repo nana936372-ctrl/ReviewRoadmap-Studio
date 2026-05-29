@@ -121,6 +121,20 @@ export const appCopy = {
       risk: 'Risk',
       evidence: 'Evidence'
     },
+    scoreDetail: {
+      eyebrow: 'Evaluation detail',
+      title: 'Priority score details',
+      back: 'Back to overview',
+      formula: 'Priority formula',
+      scoreDimensions: 'Score dimensions',
+      recommendationDimensions: 'Recommendation dimensions',
+      metricDimensions: 'Metric dimensions',
+      experimentDimensions: 'Experiment dimensions',
+      riskDimensions: 'Risk dimensions',
+      evidence: 'Referenced evidence',
+      scoreLabel: (value: number) => `${value} priority score`,
+      dimensionWeight: (value: number) => `Weight ${Math.round(value * 100)}%`
+    },
     workflow: {
       eyebrow: 'AI workflow',
       title: 'Explainable analysis chain',
@@ -136,12 +150,26 @@ export const appCopy = {
       empty: 'No decision brief yet. Add reviews to generate a portfolio-ready recommendation.',
       download: 'Download brief',
       markdownTitle: 'ReviewRoadmap Decision Brief',
+      context: 'Context',
       problemSignal: 'Problem signal',
       recommendedDecision: 'Recommended decision',
       userScenario: 'User scenario',
+      whyNow: 'Why now',
+      successMetric: 'Success metric',
       evidence: 'Evidence',
       nextExperiment: 'Next experiment',
+      riskAndTradeoff: 'Risk and tradeoff',
       evaluationDimensions: 'Evaluation dimensions',
+      nextSteps: 'Next steps',
+      contextBody:
+        'This brief turns review-shaped public feedback into a product decision for a fictional AI writing app.',
+      whyNowBody:
+        'The top opportunity combines repeated evidence, high severity, and a direct trust or retention consequence.',
+      nextStepItems: [
+        'Confirm the top evidence theme with support or interview notes.',
+        'Ship the smallest validated intervention for the selected segment.',
+        'Review the success metric after the experiment window closes.'
+      ],
       noEvidence: 'No direct evidence quote available.'
     }
   },
@@ -259,6 +287,20 @@ export const appCopy = {
       risk: '风险',
       evidence: '证据'
     },
+    scoreDetail: {
+      eyebrow: '评估详情',
+      title: '优先级评分详情',
+      back: '返回总览',
+      formula: '优先级公式',
+      scoreDimensions: '评分维度',
+      recommendationDimensions: '建议评估维度',
+      metricDimensions: '指标评估维度',
+      experimentDimensions: '实验评估维度',
+      riskDimensions: '风险评估维度',
+      evidence: '引用证据',
+      scoreLabel: (value: number) => `${value} 优先级分数`,
+      dimensionWeight: (value: number) => `权重 ${Math.round(value * 100)}%`
+    },
     workflow: {
       eyebrow: 'AI 工作流',
       title: '可解释分析链路',
@@ -273,12 +315,24 @@ export const appCopy = {
       empty: '还没有决策 brief。添加评论后即可生成适合作品集展示的建议。',
       download: '下载 Brief',
       markdownTitle: 'ReviewRoadmap 产品决策 Brief',
+      context: '背景',
       problemSignal: '问题信号',
       recommendedDecision: '推荐决策',
       userScenario: '用户场景',
+      whyNow: '为什么现在做',
+      successMetric: '成功指标',
       evidence: '证据',
       nextExperiment: '下一步实验',
+      riskAndTradeoff: '风险与取舍',
       evaluationDimensions: '评估维度',
+      nextSteps: '下一步行动',
+      contextBody: '这份 brief 将接近公开 App Store 反馈的评论样本转化为一个 AI 写作应用的产品决策。',
+      whyNowBody: '首要机会同时具备重复证据、高严重度，以及对信任或留存的直接影响。',
+      nextStepItems: [
+        '用客服记录或用户访谈确认最高优先级证据主题。',
+        '面向选定用户场景发布最小可验证干预。',
+        '在实验窗口结束后复盘成功指标。'
+      ],
       noEvidence: '暂无直接证据引用。'
     }
   }

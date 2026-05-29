@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { sampleReviews } from '../data/sampleReviews';
 import { appCopy } from '../i18n/copy';
 import { analyzeReviews } from '../lib/analysis/pipeline';
@@ -9,27 +9,28 @@ import { RoadmapCards } from './RoadmapCards';
 describe('RoadmapCards', () => {
   it('renders all roadmap decision types with evidence', () => {
     const analysis = analyzeReviews(sampleReviews, '2026-05-28T08:00:00.000Z');
+    const onScoreSelect = vi.fn();
 
-    renderApp(<RoadmapCards cards={analysis.roadmapCards} copy={appCopy.en.roadmap} />);
+    renderApp(<RoadmapCards cards={analysis.roadmapCards} copy={appCopy.en.roadmap} onScoreSelect={onScoreSelect} />);
 
     expect(screen.getByText('Fix')).toBeInTheDocument();
     expect(screen.getByText('Improve')).toBeInTheDocument();
     expect(screen.getByText('Explore')).toBeInTheDocument();
     expect(screen.getByText(/Stabilize draft saving/i)).toBeInTheDocument();
     expect(screen.getByText(/Users trying to finish important writing work/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/Business impact/i)).toHaveLength(analysis.roadmapCards.length);
     expect(screen.getAllByText(/95% confidence/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/Validation experiment/i)).toHaveLength(analysis.roadmapCards.length);
     expect(screen.getAllByRole('button', { name: /Explain priority score/i })).toHaveLength(analysis.roadmapCards.length);
-    expect(screen.getAllByText(/Priority formula/i)).toHaveLength(analysis.roadmapCards.length);
-    expect(screen.getAllByText(/Recommendation dimensions/i)).toHaveLength(analysis.roadmapCards.length);
-    expect(screen.getAllByText(/Metric dimensions/i)).toHaveLength(analysis.roadmapCards.length);
-    expect(screen.getAllByText(/Experiment dimensions/i)).toHaveLength(analysis.roadmapCards.length);
-    expect(screen.getAllByText(/Risk dimensions/i)).toHaveLength(analysis.roadmapCards.length);
+    expect(screen.queryByText(/Priority formula/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Recommendation dimensions/i)).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Explain priority score: 80/i }));
+
+    expect(onScoreSelect).toHaveBeenCalledWith('fix-reliability');
   });
 
   it('renders an empty state without the roadmap grid when there are no cards', () => {
-    renderApp(<RoadmapCards cards={[]} copy={appCopy.en.roadmap} />);
+    renderApp(<RoadmapCards cards={[]} copy={appCopy.en.roadmap} onScoreSelect={vi.fn()} />);
 
     expect(
       screen.getByText(/No roadmap decisions yet. Add review evidence to generate recommendations./i)
@@ -53,7 +54,10 @@ describe('DecisionBrief', () => {
     renderApp(<DecisionBrief analysis={analysis} copy={appCopy.zh.brief} />);
 
     expect(screen.getByText(/用户反馈崩溃、导出失败、同步异常或作品丢失/i)).toBeInTheDocument();
-    expect(screen.getByText(/评估维度/i)).toBeInTheDocument();
+    expect(screen.getByText(/为什么现在做/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /成功指标/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /下一步行动/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /评估维度/i })).toBeInTheDocument();
     expect(screen.queryByText(/用户希望增加导出、规划视图、可复用设置/i)).not.toBeInTheDocument();
   });
 });

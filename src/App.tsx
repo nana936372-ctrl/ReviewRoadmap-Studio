@@ -4,6 +4,7 @@ import { DecisionBrief } from './components/DecisionBrief';
 import { InsightDashboard } from './components/InsightDashboard';
 import { InputPanel } from './components/InputPanel';
 import { RoadmapCards } from './components/RoadmapCards';
+import { ScoreDetailPage } from './components/ScoreDetailPage';
 import { sampleReviews } from './data/sampleReviews';
 import type { Language } from './domain/types';
 import { appCopy, languageOptions } from './i18n/copy';
@@ -15,11 +16,15 @@ export default function App() {
   const [appUrl, setAppUrl] = useState(DEMO_APP_URL);
   const [analysisRunCount, setAnalysisRunCount] = useState(1);
   const [language, setLanguage] = useState<Language>('en');
+  const [selectedRoadmapCardId, setSelectedRoadmapCardId] = useState<string | null>(null);
   const copy = appCopy[language];
   const analysis = useMemo(
     () => analyzeReviews(sampleReviews, '2026-05-28T08:00:00.000Z', language),
     [analysisRunCount, language]
   );
+  const selectedRoadmapCard = selectedRoadmapCardId
+    ? analysis.roadmapCards.find((card) => card.id === selectedRoadmapCardId)
+    : undefined;
 
   return (
     <main className="app-shell">
@@ -51,17 +56,34 @@ export default function App() {
         </div>
       </section>
 
-      <InputPanel
-        appUrl={appUrl}
-        copy={copy.input}
-        onAppUrlChange={setAppUrl}
-        onAnalyze={() => setAnalysisRunCount((count) => count + 1)}
-      />
-
-      <InsightDashboard analysis={analysis} copy={copy.dashboard} />
-      <RoadmapCards cards={analysis.roadmapCards} copy={copy.roadmap} />
-      <AiWorkflow copy={copy.workflow} language={language} />
-      <DecisionBrief analysis={analysis} copy={copy.brief} />
+      {selectedRoadmapCard ? (
+        <ScoreDetailPage
+          card={selectedRoadmapCard}
+          copy={copy.scoreDetail}
+          roadmapCopy={copy.roadmap}
+          onBack={() => setSelectedRoadmapCardId(null)}
+        />
+      ) : (
+        <>
+          <InputPanel
+            appUrl={appUrl}
+            copy={copy.input}
+            onAppUrlChange={setAppUrl}
+            onAnalyze={() => {
+              setSelectedRoadmapCardId(null);
+              setAnalysisRunCount((count) => count + 1);
+            }}
+          />
+          <InsightDashboard analysis={analysis} copy={copy.dashboard} />
+          <RoadmapCards
+            cards={analysis.roadmapCards}
+            copy={copy.roadmap}
+            onScoreSelect={setSelectedRoadmapCardId}
+          />
+          <AiWorkflow copy={copy.workflow} language={language} />
+          <DecisionBrief analysis={analysis} copy={copy.brief} />
+        </>
+      )}
     </main>
   );
 }
