@@ -12,6 +12,8 @@ export type Urgency = 'low' | 'medium' | 'high';
 
 export type RoadmapType = 'fix' | 'improve' | 'explore';
 
+export type Language = 'en' | 'zh';
+
 export interface RawReview {
   id: string;
   source: 'app-store-sample';

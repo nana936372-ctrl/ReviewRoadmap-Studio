@@ -1,24 +1,24 @@
 import { CalendarDays, FileUp, Search, Sparkles, Tags } from 'lucide-react';
+import type { AppCopy } from '../i18n/copy';
 
 interface InputPanelProps {
   appUrl: string;
+  copy: AppCopy['input'];
   onAppUrlChange: (value: string) => void;
   onAnalyze: () => void;
 }
 
-export function InputPanel({ appUrl, onAppUrlChange, onAnalyze }: InputPanelProps) {
+export function InputPanel({ appUrl, copy, onAppUrlChange, onAnalyze }: InputPanelProps) {
   return (
     <section className="input-panel" aria-labelledby="input-title">
       <div>
-        <p className="eyebrow">Demo data source</p>
-        <h2 id="input-title">Analyze an App Store review sample</h2>
-        <p className="section-copy">
-          This prototype uses a prepared review sample for a fictional AI writing app, shaped like public App Store feedback.
-        </p>
+        <p className="eyebrow">{copy.eyebrow}</p>
+        <h2 id="input-title">{copy.title}</h2>
+        <p className="section-copy">{copy.description}</p>
       </div>
 
       <label className="field-label" htmlFor="app-url">
-        App Store URL
+        {copy.appStoreUrl}
       </label>
       <div className="url-row">
         <Search aria-hidden="true" size={18} />
@@ -31,46 +31,46 @@ export function InputPanel({ appUrl, onAppUrlChange, onAnalyze }: InputPanelProp
         />
       </div>
 
-      <div className="input-grid" aria-label="Review analysis settings">
+      <div className="input-grid" aria-label={copy.settingsLabel}>
         <div>
           <label className="field-label compact" htmlFor="review-category">
-            Category
+            {copy.category}
           </label>
           <div className="control-row">
             <Tags aria-hidden="true" size={18} />
             <select id="review-category" defaultValue="ai-writing">
-              <option value="ai-writing">AI writing app</option>
-              <option value="productivity">Productivity app</option>
-              <option value="learning">Language learning app</option>
-              <option value="knowledge">Knowledge management app</option>
+              <option value="ai-writing">{copy.categoryOptions.aiWriting}</option>
+              <option value="productivity">{copy.categoryOptions.productivity}</option>
+              <option value="learning">{copy.categoryOptions.learning}</option>
+              <option value="knowledge">{copy.categoryOptions.knowledge}</option>
             </select>
           </div>
         </div>
 
         <div>
           <label className="field-label compact" htmlFor="time-window">
-            Time window
+            {copy.timeWindow}
           </label>
           <div className="control-row">
             <CalendarDays aria-hidden="true" size={18} />
             <select id="time-window" defaultValue="may-2026">
-              <option value="may-2026">May 2026 sample</option>
-              <option value="last-30">Last 30 days</option>
-              <option value="last-90">Last 90 days</option>
+              <option value="may-2026">{copy.timeWindowOptions.may2026}</option>
+              <option value="last-30">{copy.timeWindowOptions.last30}</option>
+              <option value="last-90">{copy.timeWindowOptions.last90}</option>
             </select>
           </div>
         </div>
 
         <div>
           <label className="field-label compact" htmlFor="review-sample">
-            Review sample
+            {copy.reviewSample}
           </label>
           <div className="control-row">
             <FileUp aria-hidden="true" size={18} />
             <input id="review-sample" type="file" accept=".csv,.json,.txt" aria-describedby="review-sample-note" />
           </div>
           <p id="review-sample-note" className="field-note">
-            Optional upload control; this demo uses prepared sample data.
+            {copy.reviewSampleNote}
           </p>
         </div>
       </div>
@@ -78,9 +78,9 @@ export function InputPanel({ appUrl, onAppUrlChange, onAnalyze }: InputPanelProp
       <div className="input-actions">
         <button className="primary-button" type="button" onClick={onAnalyze}>
           <Sparkles aria-hidden="true" size={18} />
-          Analyze Reviews
+          {copy.analyze}
         </button>
-        <span>18 review-shaped records - AI writing category - May 2026 sample</span>
+        <span>{copy.summary}</span>
       </div>
     </section>
   );

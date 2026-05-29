@@ -1,21 +1,27 @@
 import { Boxes } from 'lucide-react';
-import { aiWorkflowStages } from '../lib/analysis/promptSpec';
+import type { Language } from '../domain/types';
+import type { AppCopy } from '../i18n/copy';
+import { getAiWorkflowStages } from '../lib/analysis/promptSpec';
 
-export function AiWorkflow() {
+interface AiWorkflowProps {
+  copy: AppCopy['workflow'];
+  language: Language;
+}
+
+export function AiWorkflow({ copy, language }: AiWorkflowProps) {
+  const aiWorkflowStages = getAiWorkflowStages(language);
+
   return (
     <section className="panel" aria-labelledby="workflow-title">
       <div className="section-heading">
         <div>
-          <p className="eyebrow">AI workflow</p>
-          <h2 id="workflow-title">Explainable analysis chain</h2>
-          <p className="section-copy">
-            The demo separates classification, clustering, scoring, and recommendation so the AI does not feel like a
-            black box.
-          </p>
+          <p className="eyebrow">{copy.eyebrow}</p>
+          <h2 id="workflow-title">{copy.title}</h2>
+          <p className="section-copy">{copy.description}</p>
         </div>
         <div className="metric-pill">
           <Boxes aria-hidden="true" size={18} />
-          {aiWorkflowStages.length} stages
+          {copy.stages(aiWorkflowStages.length)}
         </div>
       </div>
 

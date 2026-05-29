@@ -1,10 +1,14 @@
-import type { AnalysisResult, RawReview } from '../../domain/types';
+import type { AnalysisResult, Language, RawReview } from '../../domain/types';
 import { buildInsightClusters } from './cluster';
 import { classifyReviews } from './classify';
 import { normalizeReviews } from './normalize';
 import { generateRoadmapCards } from './roadmap';
 
-export function analyzeReviews(rawReviews: RawReview[], generatedAt = new Date().toISOString()): AnalysisResult {
+export function analyzeReviews(
+  rawReviews: RawReview[],
+  generatedAt = new Date().toISOString(),
+  language: Language = 'en'
+): AnalysisResult {
   const reviews = normalizeReviews(rawReviews);
 
   if (reviews.length === 0) {
@@ -18,8 +22,8 @@ export function analyzeReviews(rawReviews: RawReview[], generatedAt = new Date()
   }
 
   const signals = classifyReviews(reviews);
-  const clusters = buildInsightClusters(reviews, signals);
-  const roadmapCards = generateRoadmapCards(clusters);
+  const clusters = buildInsightClusters(reviews, signals, language);
+  const roadmapCards = generateRoadmapCards(clusters, language);
 
   return {
     reviews,

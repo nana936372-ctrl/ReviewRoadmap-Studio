@@ -1,11 +1,13 @@
 import { BarChart3, Quote } from 'lucide-react';
 import type { AnalysisResult, SignalLabel } from '../domain/types';
+import type { AppCopy } from '../i18n/copy';
 
 interface InsightDashboardProps {
   analysis: AnalysisResult;
+  copy: AppCopy['dashboard'];
 }
 
-export function InsightDashboard({ analysis }: InsightDashboardProps) {
+export function InsightDashboard({ analysis, copy }: InsightDashboardProps) {
   const topClusters = analysis.clusters.slice(0, 6);
   const hasReviews = analysis.reviews.length > 0;
   const hasClusters = topClusters.length > 0;
@@ -33,19 +35,17 @@ export function InsightDashboard({ analysis }: InsightDashboardProps) {
     <section className="panel" aria-labelledby="intelligence-title">
       <div className="section-heading">
         <div>
-          <p className="eyebrow">Evidence synthesis</p>
-          <h2 id="intelligence-title">Review intelligence</h2>
-          <p className="section-copy">
-            A structured readout of recurring user signals before the product makes roadmap recommendations.
-          </p>
+          <p className="eyebrow">{copy.eyebrow}</p>
+          <h2 id="intelligence-title">{copy.title}</h2>
+          <p className="section-copy">{copy.description}</p>
         </div>
         <div className="metric-pill">
           <BarChart3 aria-hidden="true" size={18} />
-          {averageRating === null ? 'No rating yet' : `${averageRating.toFixed(1)} avg rating`}
+          {averageRating === null ? copy.noRating : copy.averageRating(averageRating.toFixed(1))}
         </div>
       </div>
 
-      {!hasReviews && <p className="section-copy">No review evidence available yet.</p>}
+      {!hasReviews && <p className="section-copy">{copy.noEvidence}</p>}
 
       {hasClusters && (
         <div className="cluster-grid">
@@ -53,12 +53,12 @@ export function InsightDashboard({ analysis }: InsightDashboardProps) {
             <article className="cluster-card" key={cluster.id}>
               <div className="cluster-card-header">
                 <h3>{cluster.name}</h3>
-                <span>{cluster.reviewCount} reviews</span>
+                <span>{copy.reviews(cluster.reviewCount)}</span>
               </div>
               <p>{cluster.description}</p>
               <div className="cluster-meta">
-                <span>{Math.round(cluster.confidence * 100)}% confidence</span>
-                <span>{cluster.averageRating.toFixed(1)} rating</span>
+                <span>{copy.confidence(Math.round(cluster.confidence * 100))}</span>
+                <span>{copy.rating(cluster.averageRating.toFixed(1))}</span>
               </div>
             </article>
           ))}
@@ -66,14 +66,14 @@ export function InsightDashboard({ analysis }: InsightDashboardProps) {
       )}
 
       {hasClusters && (
-        <div className="insight-table-wrap" aria-label="Sentiment by theme">
+        <div className="insight-table-wrap" aria-label={copy.sentimentLabel}>
           <table className="insight-table">
             <thead>
               <tr>
-                <th>Theme</th>
-                <th>Negative</th>
-                <th>Mixed</th>
-                <th>Positive</th>
+                <th>{copy.table.theme}</th>
+                <th>{copy.table.negative}</th>
+                <th>{copy.table.mixed}</th>
+                <th>{copy.table.positive}</th>
               </tr>
             </thead>
             <tbody>
@@ -91,7 +91,7 @@ export function InsightDashboard({ analysis }: InsightDashboardProps) {
       )}
 
       {hasReviews && (
-        <div className="evidence-strip" aria-label="Representative review evidence">
+        <div className="evidence-strip" aria-label={copy.evidenceLabel}>
           {evidenceRows.map(({ signal, review }) => review && (
             <figure key={signal.reviewId}>
               <Quote aria-hidden="true" size={16} />
@@ -99,7 +99,8 @@ export function InsightDashboard({ analysis }: InsightDashboardProps) {
                 {review.title}: {review.body}
               </blockquote>
               <figcaption>
-                {review.rating} stars - {signal.labels.join(', ')} - v{review.appVersion}
+                {copy.stars(review.rating)} - {signal.labels.map((label) => copy.signalLabels[label]).join(', ')} - v
+                {review.appVersion}
               </figcaption>
             </figure>
           ))}

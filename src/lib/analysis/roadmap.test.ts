@@ -51,4 +51,14 @@ describe('generateRoadmapCards', () => {
   it('returns an empty card list for empty clusters', () => {
     expect(generateRoadmapCards([])).toEqual([]);
   });
+
+  it('can localize roadmap cards for Chinese product review', () => {
+    const cards = generateRoadmapCards(clusters, 'zh');
+
+    expect(cards[0]).toMatchObject({
+      title: '稳定草稿保存与导出可靠性',
+      recommendation: '先修复自动保存、导出恢复和同步状态提示，再扩展新的写作模式。',
+      targetMetric: '降低每 100 条评论中的一星可靠性投诉数。'
+    });
+  });
 });

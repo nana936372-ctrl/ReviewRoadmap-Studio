@@ -54,4 +54,14 @@ describe('buildInsightClusters', () => {
     });
     expect(clusters[0].representativeQuotes).toEqual(['Crash: The app crashed during export.']);
   });
+
+  it('can localize cluster copy for Chinese product review', () => {
+    const clusters = buildInsightClusters(reviews, signals, 'zh');
+
+    expect(clusters[0]).toMatchObject({
+      name: '可靠性与数据丢失问题',
+      description: '用户反馈崩溃、导出失败、同步异常或作品丢失，这些问题会直接损害信任。',
+      suspectedUserScenario: '正在赶重要写作任务、对可靠性要求很高的用户。'
+    });
+  });
 });

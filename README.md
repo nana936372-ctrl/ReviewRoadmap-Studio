@@ -2,6 +2,8 @@
 
 ReviewRoadmap Studio is a portfolio-grade AI product decision assistant for indie app builders and early-stage app teams. The demo analyzes iOS App Store-style reviews for a fictional AI writing app and turns them into insight clusters, evidence-backed roadmap cards, and a downloadable one-page product decision brief.
 
+The interface can be switched between English and Chinese. Original review quotes remain in English so the source evidence stays intact, while the product interpretation, roadmap cards, and decision brief are localized.
+
 ## Why This Exists
 
 Small app teams often have user reviews but limited product research capacity. A generic AI summary is not enough; the useful product decision is what to fix, what to improve, what to explore, and what evidence supports that choice.

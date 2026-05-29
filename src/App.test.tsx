@@ -23,4 +23,17 @@ describe('App', () => {
 
     expect(appUrlInput).toHaveValue('https://apps.apple.com/app/example/id1234567890');
   });
+
+  it('switches the product interface to Chinese', () => {
+    renderApp(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: /中文/i }));
+
+    expect(screen.getByText(/把杂乱的 App Store 评论转化为洞察聚类/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /分析 App Store 评论样本/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /评论智能分析/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /路线图决策/i })).toBeInTheDocument();
+    expect(screen.getByText(/稳定草稿保存与导出可靠性/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /下载 Brief/i })).toBeInTheDocument();
+  });
 });
