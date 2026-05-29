@@ -45,6 +45,18 @@ describe('generateRoadmapCards', () => {
     expect(cards[0].title).toBe('Stabilize draft saving and export reliability');
     expect(cards[0].evidenceQuotes).toEqual(['Lost work: The draft disappeared.']);
     expect(cards[0].userScenario).toBe('Users finishing client work.');
+    expect(cards[0].scoreFormula).toContain('frequency 22%');
+    expect(cards[0].scoreDimensions.map((dimension) => dimension.id)).toEqual([
+      'frequency',
+      'severity',
+      'businessImpact',
+      'confidence',
+      'effort'
+    ]);
+    expect(cards[0].recommendationDimensions[0].rationale).toMatch(/lost work/i);
+    expect(cards[0].metricDimensions[0].label).toBe('Metric fit');
+    expect(cards[0].experimentDimensions[0].label).toBe('Experiment quality');
+    expect(cards[0].riskDimensions[0].label).toBe('Risk control');
     expect(cards[0].priorityScore).toBeGreaterThan(cards[2].priorityScore);
   });
 
@@ -60,5 +72,8 @@ describe('generateRoadmapCards', () => {
       recommendation: '先修复自动保存、导出恢复和同步状态提示，再扩展新的写作模式。',
       targetMetric: '降低每 100 条评论中的一星可靠性投诉数。'
     });
+    expect(cards[0].scoreFormula).toContain('频次 22%');
+    expect(cards[0].scoreDimensions[0].label).toBe('频次');
+    expect(cards[0].recommendationDimensions[0].label).toBe('建议依据');
   });
 });

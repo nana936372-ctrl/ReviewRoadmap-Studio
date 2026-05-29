@@ -379,6 +379,53 @@ h1 {
   font-size: 0.82rem;
 }
 
+.review-evaluation {
+  margin-top: 12px;
+  color: #4f5d55;
+}
+
+.review-evaluation summary {
+  color: #20362c;
+  font-size: 0.84rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.review-evaluation p {
+  margin: 8px 0 0;
+  color: #607066;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.review-evaluation dl {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0 0;
+}
+
+.review-evaluation dl div {
+  display: grid;
+  grid-template-columns: minmax(86px, 0.45fr) minmax(0, 1fr);
+  gap: 8px;
+}
+
+.review-evaluation dt,
+.review-evaluation dd {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.review-evaluation dt {
+  color: #20362c;
+  font-weight: 900;
+}
+
+.review-evaluation dd {
+  color: #5f6d64;
+}
+
 .insight-table-wrap {
   margin-top: 18px;
   overflow-x: auto;
@@ -463,14 +510,26 @@ h1 {
   text-transform: uppercase;
 }
 
-.card-kicker strong {
+.score-button {
   display: grid;
   width: 42px;
   height: 42px;
   place-items: center;
+  border: 0;
   border-radius: 50%;
   color: #fff;
   background: #1f6f5b;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.score-button:hover {
+  background: #175946;
+}
+
+.score-button:focus-visible {
+  outline: 3px solid rgba(31, 111, 91, 0.28);
+  outline-offset: 2px;
 }
 
 .roadmap-card h3 {
@@ -512,6 +571,87 @@ h1 {
 
 .score-breakdown strong {
   color: #17271f;
+}
+
+.inline-evaluation,
+.workflow-evaluation {
+  margin-top: 12px;
+  color: #4f5d55;
+}
+
+.inline-evaluation summary,
+.workflow-evaluation summary {
+  color: #20362c;
+  font-size: 0.84rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.inline-evaluation.compact {
+  margin-top: 10px;
+}
+
+.evaluation-panel {
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid #dce5dd;
+  border-radius: 8px;
+  background: #f5f8f3;
+}
+
+.evaluation-panel h4 {
+  margin: 0 0 6px;
+  color: #20362c;
+  font-size: 0.9rem;
+}
+
+.evaluation-panel > p,
+.workflow-evaluation p {
+  margin: 0;
+  color: #607066;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.dimension-list {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dimension-list li {
+  padding: 9px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.dimension-row {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.dimension-row strong {
+  color: #1c2d25;
+  font-size: 0.86rem;
+}
+
+.dimension-row span,
+.dimension-list em {
+  color: #496457;
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.dimension-list p {
+  margin: 6px 0 0;
+  color: #607066;
+  font-size: 0.82rem;
+  line-height: 1.45;
 }
 
 .decision-list {
@@ -571,7 +711,7 @@ h1 {
 }
 
 .workflow-list li {
-  min-height: 168px;
+  min-height: 300px;
   padding: 16px;
   border: 1px solid #d9e3db;
   border-radius: 8px;
@@ -588,6 +728,40 @@ h1 {
   color: #5b685f;
   font-size: 0.92rem;
   line-height: 1.5;
+}
+
+.workflow-evaluation p {
+  margin-top: 8px;
+}
+
+.workflow-dimensions {
+  margin-top: 10px;
+}
+
+.workflow-dimensions b {
+  display: block;
+  color: #20362c;
+  font-size: 0.8rem;
+}
+
+.workflow-dimensions ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.workflow-dimensions li {
+  min-height: auto;
+  padding: 5px 7px;
+  border: 0;
+  border-radius: 999px;
+  color: #315044;
+  background: #edf4ef;
+  font-size: 0.76rem;
+  font-weight: 800;
 }
 
 .brief-panel {
@@ -663,6 +837,30 @@ h1 {
   margin: 0;
   color: #dce6dd;
   line-height: 1.55;
+}
+
+.brief-dimensions {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.brief-dimensions li {
+  display: grid;
+  gap: 3px;
+}
+
+.brief-dimensions strong {
+  color: #ffffff;
+  font-size: 0.86rem;
+}
+
+.brief-dimensions span {
+  color: #dce6dd;
+  font-size: 0.84rem;
+  line-height: 1.35;
 }
 
 .brief-empty {

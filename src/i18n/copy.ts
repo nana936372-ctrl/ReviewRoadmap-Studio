@@ -1,4 +1,4 @@
-import type { Language, RoadmapCard, SignalLabel } from '../domain/types';
+import type { Language, RoadmapCard, Sentiment, SignalLabel, Urgency } from '../domain/types';
 
 export const languageOptions: { code: Language; label: string }[] = [
   { code: 'en', label: 'English' },
@@ -53,6 +53,8 @@ export const appCopy = {
       rating: (value: string) => `${value} rating`,
       sentimentLabel: 'Sentiment by theme',
       evidenceLabel: 'Representative review evidence',
+      reviewEvaluationTitle: 'Review evaluation dimensions',
+      reviewEvaluationHint: 'Why this review is useful evidence',
       table: {
         theme: 'Theme',
         negative: 'Negative',
@@ -60,6 +62,24 @@ export const appCopy = {
         positive: 'Positive'
       },
       stars: (rating: number) => `${rating} stars`,
+      reviewDimensionLabels: {
+        starRating: 'Star rating',
+        productSignals: 'Product signals',
+        sentiment: 'Sentiment',
+        urgency: 'Urgency',
+        evidenceUse: 'Evidence use'
+      },
+      sentimentValues: {
+        negative: 'Negative',
+        mixed: 'Mixed',
+        positive: 'Positive'
+      } satisfies Record<Sentiment, string>,
+      urgencyValues: {
+        low: 'Low',
+        medium: 'Medium',
+        high: 'High'
+      } satisfies Record<Urgency, string>,
+      evidenceUseValue: 'Representative quote for clustering and roadmap scoring',
       signalLabels: {
         bug: 'bug',
         feature_request: 'feature_request',
@@ -88,6 +108,14 @@ export const appCopy = {
       } satisfies Record<keyof RoadmapCard['scoringFactors'], string>,
       confidence: (value: number) => `${value}% confidence`,
       scoringFactors: (type: string) => `${type} scoring factors`,
+      explainPriorityScore: 'Explain priority score',
+      priorityFormula: 'Priority formula',
+      evaluationDimensions: 'Evaluation dimensions',
+      recommendationDimensions: 'Recommendation dimensions',
+      metricDimensions: 'Metric dimensions',
+      experimentDimensions: 'Experiment dimensions',
+      riskDimensions: 'Risk dimensions',
+      dimensionWeight: (value: number) => `Weight ${Math.round(value * 100)}%`,
       metric: 'Metric',
       validationExperiment: 'Validation experiment',
       risk: 'Risk',
@@ -98,7 +126,9 @@ export const appCopy = {
       title: 'Explainable analysis chain',
       description:
         'The demo separates classification, clustering, scoring, and recommendation so the AI does not feel like a black box.',
-      stages: (count: number) => `${count} stages`
+      stages: (count: number) => `${count} stages`,
+      evaluationMethod: 'Evaluation method',
+      dimensions: 'Evaluation dimensions'
     },
     brief: {
       eyebrow: 'Portfolio-ready artifact',
@@ -111,6 +141,7 @@ export const appCopy = {
       userScenario: 'User scenario',
       evidence: 'Evidence',
       nextExperiment: 'Next experiment',
+      evaluationDimensions: 'Evaluation dimensions',
       noEvidence: 'No direct evidence quote available.'
     }
   },
@@ -160,6 +191,8 @@ export const appCopy = {
       rating: (value: string) => `${value} 评分`,
       sentimentLabel: '按主题查看情绪倾向',
       evidenceLabel: '代表性评论证据',
+      reviewEvaluationTitle: '评论评估维度',
+      reviewEvaluationHint: '为什么这条评论可作为证据',
       table: {
         theme: '主题',
         negative: '负向',
@@ -167,6 +200,24 @@ export const appCopy = {
         positive: '正向'
       },
       stars: (rating: number) => `${rating} 星`,
+      reviewDimensionLabels: {
+        starRating: '星级评分',
+        productSignals: '产品信号',
+        sentiment: '情绪倾向',
+        urgency: '紧急度',
+        evidenceUse: '证据用途'
+      },
+      sentimentValues: {
+        negative: '负向',
+        mixed: '混合',
+        positive: '正向'
+      } satisfies Record<Sentiment, string>,
+      urgencyValues: {
+        low: '低',
+        medium: '中',
+        high: '高'
+      } satisfies Record<Urgency, string>,
+      evidenceUseValue: '用于聚类和路线图评分的代表性引用',
       signalLabels: {
         bug: '缺陷',
         feature_request: '功能请求',
@@ -195,6 +246,14 @@ export const appCopy = {
       } satisfies Record<keyof RoadmapCard['scoringFactors'], string>,
       confidence: (value: number) => `${value}% 置信度`,
       scoringFactors: (type: string) => `${type}评分因素`,
+      explainPriorityScore: '解释优先级分数',
+      priorityFormula: '优先级公式',
+      evaluationDimensions: '评估维度',
+      recommendationDimensions: '建议评估维度',
+      metricDimensions: '指标评估维度',
+      experimentDimensions: '实验评估维度',
+      riskDimensions: '风险评估维度',
+      dimensionWeight: (value: number) => `权重 ${Math.round(value * 100)}%`,
       metric: '指标',
       validationExperiment: '验证实验',
       risk: '风险',
@@ -204,7 +263,9 @@ export const appCopy = {
       eyebrow: 'AI 工作流',
       title: '可解释分析链路',
       description: 'Demo 将分类、聚类、评分和建议生成拆开呈现，避免让 AI 输出变成黑箱。',
-      stages: (count: number) => `${count} 个阶段`
+      stages: (count: number) => `${count} 个阶段`,
+      evaluationMethod: '评估方式',
+      dimensions: '评估维度'
     },
     brief: {
       eyebrow: '作品集产物',
@@ -217,6 +278,7 @@ export const appCopy = {
       userScenario: '用户场景',
       evidence: '证据',
       nextExperiment: '下一步实验',
+      evaluationDimensions: '评估维度',
       noEvidence: '暂无直接证据引用。'
     }
   }

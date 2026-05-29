@@ -1,10 +1,20 @@
 import { Download, FileText } from 'lucide-react';
-import type { AnalysisResult } from '../domain/types';
+import type { AnalysisResult, EvaluationDimension } from '../domain/types';
 import type { AppCopy } from '../i18n/copy';
 
 interface DecisionBriefProps {
   analysis: AnalysisResult;
   copy: AppCopy['brief'];
+}
+
+function briefEvaluationDimensions(card: AnalysisResult['roadmapCards'][number]): EvaluationDimension[] {
+  return [
+    ...card.scoreDimensions.slice(0, 3),
+    ...card.recommendationDimensions,
+    ...card.metricDimensions,
+    ...card.experimentDimensions,
+    ...card.riskDimensions
+  ];
 }
 
 export function DecisionBrief({ analysis, copy }: DecisionBriefProps) {
@@ -32,14 +42,19 @@ export function DecisionBrief({ analysis, copy }: DecisionBriefProps) {
 
   const selectedCard = topCard;
   const selectedCluster = topCluster;
+  const selectedDimensions = briefEvaluationDimensions(selectedCard);
 
   function downloadBrief() {
+    const dimensionMarkdown = selectedDimensions
+      .map((dimension) => `- ${dimension.label}: ${dimension.value}. ${dimension.rationale}`)
+      .join('\n');
     const markdown = [
       `# ${copy.markdownTitle}`,
       `## ${copy.problemSignal}\n${selectedCluster.description}`,
       `## ${copy.recommendedDecision}\n${selectedCard.recommendation}`,
       `## ${copy.userScenario}\n${selectedCard.userScenario}`,
       `## ${copy.evidence}\n${selectedCard.evidenceQuotes[0] ?? copy.noEvidence}`,
+      `## ${copy.evaluationDimensions}\n${dimensionMarkdown}`,
       `## ${copy.nextExperiment}\n${selectedCard.validationExperiment}`
     ].join('\n\n');
     const url = URL.createObjectURL(new Blob([markdown], { type: 'text/markdown;charset=utf-8' }));
@@ -89,6 +104,17 @@ export function DecisionBrief({ analysis, copy }: DecisionBriefProps) {
         <article>
           <h3>{copy.nextExperiment}</h3>
           <p>{selectedCard.validationExperiment}</p>
+        </article>
+        <article>
+          <h3>{copy.evaluationDimensions}</h3>
+          <ul className="brief-dimensions">
+            {selectedDimensions.map((dimension) => (
+              <li key={`${dimension.id}-${dimension.label}`}>
+                <strong>{dimension.label}</strong>
+                <span>{dimension.value}</span>
+              </li>
+            ))}
+          </ul>
         </article>
       </div>
     </section>

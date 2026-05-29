@@ -30,6 +30,18 @@ export function AiWorkflow({ copy, language }: AiWorkflowProps) {
           <li key={stage.name}>
             <strong>{stage.name}</strong>
             <span>{stage.description}</span>
+            <details className="workflow-evaluation" open>
+              <summary>{copy.evaluationMethod}</summary>
+              <p>{stage.evaluationMethod}</p>
+              <div className="workflow-dimensions">
+                <b>{copy.dimensions}</b>
+                <ul>
+                  {stage.dimensions.map((dimension) => (
+                    <li key={dimension}>{dimension}</li>
+                  ))}
+                </ul>
+              </div>
+            </details>
           </li>
         ))}
       </ol>

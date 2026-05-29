@@ -20,6 +20,12 @@ describe('RoadmapCards', () => {
     expect(screen.getAllByText(/Business impact/i)).toHaveLength(analysis.roadmapCards.length);
     expect(screen.getAllByText(/95% confidence/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/Validation experiment/i)).toHaveLength(analysis.roadmapCards.length);
+    expect(screen.getAllByRole('button', { name: /Explain priority score/i })).toHaveLength(analysis.roadmapCards.length);
+    expect(screen.getAllByText(/Priority formula/i)).toHaveLength(analysis.roadmapCards.length);
+    expect(screen.getAllByText(/Recommendation dimensions/i)).toHaveLength(analysis.roadmapCards.length);
+    expect(screen.getAllByText(/Metric dimensions/i)).toHaveLength(analysis.roadmapCards.length);
+    expect(screen.getAllByText(/Experiment dimensions/i)).toHaveLength(analysis.roadmapCards.length);
+    expect(screen.getAllByText(/Risk dimensions/i)).toHaveLength(analysis.roadmapCards.length);
   });
 
   it('renders an empty state without the roadmap grid when there are no cards', () => {
@@ -47,6 +53,7 @@ describe('DecisionBrief', () => {
     renderApp(<DecisionBrief analysis={analysis} copy={appCopy.zh.brief} />);
 
     expect(screen.getByText(/用户反馈崩溃、导出失败、同步异常或作品丢失/i)).toBeInTheDocument();
+    expect(screen.getByText(/评估维度/i)).toBeInTheDocument();
     expect(screen.queryByText(/用户希望增加导出、规划视图、可复用设置/i)).not.toBeInTheDocument();
   });
 });

@@ -16,6 +16,9 @@ describe('InsightDashboard', () => {
     expect(screen.getByText(/Crashes during long drafts/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Sentiment by theme/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Representative review evidence/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Review evaluation dimensions/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Star rating/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Urgency/i).length).toBeGreaterThan(0);
   });
 
   it('renders an empty state for analysis without reviews', () => {

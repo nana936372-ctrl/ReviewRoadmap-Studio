@@ -34,6 +34,9 @@ describe('App', () => {
     expect(screen.getByRole('heading', { name: /评论智能分析/i })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /路线图决策/i })).toBeInTheDocument();
     expect(screen.getByText(/稳定草稿保存与导出可靠性/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/评估维度/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/优先级公式/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/评估方式/i).length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: /下载 Brief/i })).toBeInTheDocument();
   });
 });

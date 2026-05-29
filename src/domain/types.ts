@@ -14,6 +14,16 @@ export type RoadmapType = 'fix' | 'improve' | 'explore';
 
 export type Language = 'en' | 'zh';
 
+export interface EvaluationDimension {
+  id: string;
+  label: string;
+  value: string;
+  rationale: string;
+  score?: number;
+  weight?: number;
+  evidence?: string[];
+}
+
 export interface RawReview {
   id: string;
   source: 'app-store-sample';
@@ -61,6 +71,12 @@ export interface RoadmapCard {
     confidence: number;
     effort: number;
   };
+  scoreFormula: string;
+  scoreDimensions: EvaluationDimension[];
+  recommendationDimensions: EvaluationDimension[];
+  metricDimensions: EvaluationDimension[];
+  experimentDimensions: EvaluationDimension[];
+  riskDimensions: EvaluationDimension[];
   evidenceQuotes: string[];
   userScenario: string;
   targetMetric: string;
