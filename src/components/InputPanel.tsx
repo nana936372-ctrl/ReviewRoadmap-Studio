@@ -10,28 +10,36 @@ interface InputPanelProps {
 
 export function InputPanel({ appUrl, copy, onAppUrlChange, onAnalyze }: InputPanelProps) {
   return (
-    <section className="input-panel" aria-labelledby="input-title">
-      <div>
-        <p className="eyebrow">{copy.eyebrow}</p>
-        <h2 id="input-title">{copy.title}</h2>
-        <p className="section-copy">{copy.description}</p>
+    <section className="input-panel compact-input" aria-labelledby="input-title">
+      <div className="input-panel-header">
+        <div>
+          <p className="eyebrow">{copy.eyebrow}</p>
+          <h2 id="input-title">{copy.title}</h2>
+          <p className="section-copy">{copy.description}</p>
+        </div>
+        <button className="primary-button" type="button" onClick={onAnalyze}>
+          <Sparkles aria-hidden="true" size={18} />
+          {copy.analyze}
+        </button>
       </div>
 
-      <label className="field-label" htmlFor="app-url">
-        {copy.appStoreUrl}
-      </label>
-      <div className="url-row">
-        <Search aria-hidden="true" size={18} />
-        <input
-          id="app-url"
-          type="url"
-          inputMode="url"
-          value={appUrl}
-          onChange={(event) => onAppUrlChange(event.target.value)}
-        />
-      </div>
+      <div className="setup-bar" aria-label={copy.settingsLabel}>
+        <div className="setup-url">
+          <label className="field-label compact" htmlFor="app-url">
+            {copy.appStoreUrl}
+          </label>
+          <div className="url-row">
+            <Search aria-hidden="true" size={18} />
+            <input
+              id="app-url"
+              type="url"
+              inputMode="url"
+              value={appUrl}
+              onChange={(event) => onAppUrlChange(event.target.value)}
+            />
+          </div>
+        </div>
 
-      <div className="input-grid" aria-label={copy.settingsLabel}>
         <div>
           <label className="field-label compact" htmlFor="review-category">
             {copy.category}
@@ -60,7 +68,10 @@ export function InputPanel({ appUrl, copy, onAppUrlChange, onAnalyze }: InputPan
             </select>
           </div>
         </div>
+      </div>
 
+      <details className="sample-details">
+        <summary>{copy.advancedSettings}</summary>
         <div>
           <label className="field-label compact" htmlFor="review-sample">
             {copy.reviewSample}
@@ -73,15 +84,9 @@ export function InputPanel({ appUrl, copy, onAppUrlChange, onAnalyze }: InputPan
             {copy.reviewSampleNote}
           </p>
         </div>
-      </div>
+      </details>
 
-      <div className="input-actions">
-        <button className="primary-button" type="button" onClick={onAnalyze}>
-          <Sparkles aria-hidden="true" size={18} />
-          {copy.analyze}
-        </button>
-        <span>{copy.summary}</span>
-      </div>
+      <p className="setup-summary">{copy.summary}</p>
     </section>
   );
 }

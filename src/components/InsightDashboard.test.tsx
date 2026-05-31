@@ -14,7 +14,8 @@ describe('InsightDashboard', () => {
     expect(screen.getByRole('heading', { name: /Review intelligence/i })).toBeInTheDocument();
     expect(screen.getAllByText(/Reliability and data-loss issues/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText(/Crashes during long drafts/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Sentiment by theme/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Signal map/i)).toBeInTheDocument();
+    expect(screen.getAllByLabelText(/Sentiment balance/i).length).toBeGreaterThan(0);
     expect(screen.getByLabelText(/Representative review evidence/i)).toBeInTheDocument();
     expect(screen.queryByText(/Review evaluation dimensions/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Star rating/i)).not.toBeInTheDocument();

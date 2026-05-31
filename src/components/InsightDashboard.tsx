@@ -26,7 +26,7 @@ export function InsightDashboard({ analysis, copy }: InsightDashboardProps) {
       positive: relatedSignals.filter((signal) => signal.sentiment === 'positive').length
     };
   });
-  const evidenceRows = analysis.signals.slice(0, 6).map((signal) => ({
+  const evidenceRows = analysis.signals.slice(0, 4).map((signal) => ({
     signal,
     review: reviewsById.get(signal.reviewId)
   }));
@@ -48,45 +48,43 @@ export function InsightDashboard({ analysis, copy }: InsightDashboardProps) {
       {!hasReviews && <p className="section-copy">{copy.noEvidence}</p>}
 
       {hasClusters && (
-        <div className="cluster-grid">
-          {topClusters.map((cluster) => (
-            <article className="cluster-card" key={cluster.id}>
-              <div className="cluster-card-header">
-                <h3>{cluster.name}</h3>
-                <span>{copy.reviews(cluster.reviewCount)}</span>
-              </div>
-              <p>{cluster.description}</p>
-              <div className="cluster-meta">
-                <span>{copy.confidence(Math.round(cluster.confidence * 100))}</span>
-                <span>{copy.rating(cluster.averageRating.toFixed(1))}</span>
-              </div>
-            </article>
-          ))}
-        </div>
-      )}
+        <div className="signal-board" aria-label={copy.signalMapLabel}>
+          {topClusters.map((cluster) => {
+            const sentiment = sentimentRows.find((row) => row.id === cluster.id);
+            const totalSignals =
+              (sentiment?.negative ?? 0) + (sentiment?.mixed ?? 0) + (sentiment?.positive ?? 0) || 1;
 
-      {hasClusters && (
-        <div className="insight-table-wrap" aria-label={copy.sentimentLabel}>
-          <table className="insight-table">
-            <thead>
-              <tr>
-                <th>{copy.table.theme}</th>
-                <th>{copy.table.negative}</th>
-                <th>{copy.table.mixed}</th>
-                <th>{copy.table.positive}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sentimentRows.map((row) => (
-                <tr key={row.id}>
-                  <td>{row.name}</td>
-                  <td>{row.negative}</td>
-                  <td>{row.mixed}</td>
-                  <td>{row.positive}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            return (
+              <article className="signal-card" key={cluster.id}>
+                <div className="signal-card-header">
+                  <h3>{cluster.name}</h3>
+                  <span>{copy.reviews(cluster.reviewCount)}</span>
+                </div>
+                <p>{cluster.description}</p>
+                <div className="signal-card-meta">
+                  <span>{copy.confidence(Math.round(cluster.confidence * 100))}</span>
+                  <span>{copy.rating(cluster.averageRating.toFixed(1))}</span>
+                </div>
+                <div className="sentiment-meter" aria-label={`${copy.sentimentBalanceLabel}: ${cluster.name}`}>
+                  <span
+                    className="sentiment-negative"
+                    style={{ width: `${((sentiment?.negative ?? 0) / totalSignals) * 100}%` }}
+                    title={`${copy.table.negative}: ${sentiment?.negative ?? 0}`}
+                  />
+                  <span
+                    className="sentiment-mixed"
+                    style={{ width: `${((sentiment?.mixed ?? 0) / totalSignals) * 100}%` }}
+                    title={`${copy.table.mixed}: ${sentiment?.mixed ?? 0}`}
+                  />
+                  <span
+                    className="sentiment-positive"
+                    style={{ width: `${((sentiment?.positive ?? 0) / totalSignals) * 100}%` }}
+                    title={`${copy.table.positive}: ${sentiment?.positive ?? 0}`}
+                  />
+                </div>
+              </article>
+            );
+          })}
         </div>
       )}
 

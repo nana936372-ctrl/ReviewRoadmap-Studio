@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AiWorkflow } from './components/AiWorkflow';
 import { DecisionBrief } from './components/DecisionBrief';
 import { InsightDashboard } from './components/InsightDashboard';
@@ -25,6 +25,17 @@ export default function App() {
   const selectedRoadmapCard = selectedRoadmapCardId
     ? analysis.roadmapCards.find((card) => card.id === selectedRoadmapCardId)
     : undefined;
+  const topRoadmapCard = analysis.roadmapCards[0];
+
+  useEffect(() => {
+    if (!selectedRoadmapCardId) {
+      return;
+    }
+
+    window.setTimeout(() => {
+      document.getElementById('score-detail-page')?.scrollIntoView?.({ block: 'start', behavior: 'smooth' });
+    }, 0);
+  }, [selectedRoadmapCardId]);
 
   return (
     <main className="app-shell">
@@ -33,6 +44,14 @@ export default function App() {
           <p className="eyebrow">{copy.hero.eyebrow}</p>
           <h1>ReviewRoadmap Studio</h1>
           <p className="hero-copy">{copy.hero.body}</p>
+          {topRoadmapCard && (
+            <aside className="hero-decision" aria-label={copy.hero.topDecisionLabel}>
+              <span>{copy.hero.topDecisionLabel}</span>
+              <strong>{topRoadmapCard.title}</strong>
+              <p>{topRoadmapCard.recommendation}</p>
+              <span className="hero-score-value">{topRoadmapCard.priorityScore}</span>
+            </aside>
+          )}
         </div>
         <div className="hero-side">
           <div className="language-toggle" role="group" aria-label={copy.languageLabel}>

@@ -33,3 +33,13 @@ npm run build
 ## Portfolio Narrative
 
 This project demonstrates AI PM judgment by showing the full path from messy user evidence to product trade-offs. It is intentionally structured as a decision workbench rather than a chatbot so the AI value is visible through evidence, scoring, recommendations, and experiments.
+
+## 中文作品集说明
+
+投递或面试时可以使用 [ReviewRoadmap Studio 作品集说明](docs/portfolio-demo-guide.zh.md)。其中包含：
+
+- 1 分钟中文讲解脚本。
+- 真实业务价值说明。
+- Demo 展示顺序。
+- AIPM 能力映射。
+- 数据可扩展性与当前限制。

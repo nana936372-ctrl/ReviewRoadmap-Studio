@@ -49,9 +49,55 @@ function DetailSection({
   );
 }
 
+function ContributionSection({
+  dimensions,
+  copy
+}: {
+  dimensions: EvaluationDimension[];
+  copy: AppCopy['scoreDetail'];
+}) {
+  const scoredDimensions = dimensions.filter(
+    (dimension) => typeof dimension.score === 'number' && typeof dimension.weight === 'number'
+  );
+  const maxContribution = Math.max(
+    ...scoredDimensions.map((dimension) => (dimension.score ?? 0) * (dimension.weight ?? 0)),
+    1
+  );
+
+  if (scoredDimensions.length === 0) {
+    return null;
+  }
+
+  return (
+    <article className="detail-section contribution-section">
+      <h3>{copy.factorContribution}</h3>
+      <ul className="contribution-list">
+        {scoredDimensions.map((dimension) => {
+          const contribution = (dimension.score ?? 0) * (dimension.weight ?? 0);
+
+          return (
+            <li key={`${dimension.id}-${dimension.label}`}>
+              <div className="contribution-row">
+                <strong>{dimension.label}</strong>
+                <span>
+                  {dimension.value} · {copy.dimensionWeight(dimension.weight ?? 0)}
+                </span>
+              </div>
+              <div className="contribution-track" aria-hidden="true">
+                <span style={{ width: `${Math.max(8, (contribution / maxContribution) * 100)}%` }} />
+              </div>
+              <p>{dimension.rationale}</p>
+            </li>
+          );
+        })}
+      </ul>
+    </article>
+  );
+}
+
 export function ScoreDetailPage({ card, copy, roadmapCopy, onBack }: ScoreDetailPageProps) {
   return (
-    <section className="score-detail-page" aria-labelledby="score-detail-title">
+    <section id="score-detail-page" className="score-detail-page" aria-labelledby="score-detail-title">
       <button className="detail-back" type="button" onClick={onBack}>
         <ArrowLeft aria-hidden="true" size={16} />
         {copy.back}
@@ -73,6 +119,8 @@ export function ScoreDetailPage({ card, copy, roadmapCopy, onBack }: ScoreDetail
         <h3>{copy.formula}</h3>
         <p>{card.scoreFormula}</p>
       </article>
+
+      <ContributionSection dimensions={card.scoreDimensions} copy={copy} />
 
       <div className="detail-grid">
         <DetailSection title={copy.scoreDimensions} dimensions={card.scoreDimensions} copy={copy} />

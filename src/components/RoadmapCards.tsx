@@ -44,39 +44,42 @@ export function RoadmapCards({ cards, copy, onScoreSelect }: RoadmapCardsProps) 
                 <span>{card.userScenario}</span>
               </div>
 
-              <dl className="decision-list">
-                <div>
-                  <dt>
-                    <Gauge aria-hidden="true" size={15} /> {copy.metric}
-                  </dt>
-                  <dd>
-                    <span>{card.targetMetric}</span>
-                  </dd>
-                </div>
-                <div>
-                  <dt>
-                    <FlaskConical aria-hidden="true" size={15} /> {copy.validationExperiment}
-                  </dt>
-                  <dd>
-                    <span>{card.validationExperiment}</span>
-                  </dd>
-                </div>
-                <div>
-                  <dt>
-                    <ShieldCheck aria-hidden="true" size={15} /> {copy.risk}
-                  </dt>
-                  <dd>
-                    <span>{card.risks}</span>
-                  </dd>
-                </div>
-              </dl>
+              <div className="decision-card-notes">
+                <h4>{copy.decisionNotes}</h4>
+                <dl className="decision-list compact">
+                  <div>
+                    <dt>
+                      <Gauge aria-hidden="true" size={15} /> {copy.metric}
+                    </dt>
+                    <dd>
+                      <span>{card.targetMetric}</span>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>
+                      <FlaskConical aria-hidden="true" size={15} /> {copy.validationExperiment}
+                    </dt>
+                    <dd>
+                      <span>{card.validationExperiment}</span>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>
+                      <ShieldCheck aria-hidden="true" size={15} /> {copy.risk}
+                    </dt>
+                    <dd>
+                      <span>{card.risks}</span>
+                    </dd>
+                  </div>
+                </dl>
+              </div>
 
-              <div className="evidence-list">
+              <div className="evidence-list compact-evidence">
                 <div className="evidence-title">
                   <Activity aria-hidden="true" size={15} />
                   {copy.evidence}
                 </div>
-                {card.evidenceQuotes.slice(0, 2).map((quote) => (
+                {card.evidenceQuotes.slice(0, 1).map((quote) => (
                   <blockquote key={quote}>{quote}</blockquote>
                 ))}
               </div>

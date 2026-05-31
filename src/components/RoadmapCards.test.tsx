@@ -19,6 +19,7 @@ describe('RoadmapCards', () => {
     expect(screen.getByText(/Stabilize draft saving/i)).toBeInTheDocument();
     expect(screen.getByText(/Users trying to finish important writing work/i)).toBeInTheDocument();
     expect(screen.getAllByText(/95% confidence/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/Decision notes/i)).toHaveLength(analysis.roadmapCards.length);
     expect(screen.getAllByText(/Validation experiment/i)).toHaveLength(analysis.roadmapCards.length);
     expect(screen.getAllByRole('button', { name: /Explain priority score/i })).toHaveLength(analysis.roadmapCards.length);
     expect(screen.queryByText(/Priority formula/i)).not.toBeInTheDocument();
@@ -54,6 +55,7 @@ describe('DecisionBrief', () => {
     renderApp(<DecisionBrief analysis={analysis} copy={appCopy.zh.brief} />);
 
     expect(screen.getByText(/用户反馈崩溃、导出失败、同步异常或作品丢失/i)).toBeInTheDocument();
+    expect(screen.getByText(/决策备忘录/i)).toBeInTheDocument();
     expect(screen.getByText(/为什么现在做/i)).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /成功指标/i })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /下一步行动/i })).toBeInTheDocument();

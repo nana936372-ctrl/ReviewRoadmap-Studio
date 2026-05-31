@@ -83,6 +83,7 @@ export function DecisionBrief({ analysis, copy }: DecisionBriefProps) {
         <div>
           <p className="eyebrow">{copy.eyebrow}</p>
           <h2 id="brief-title">{copy.title}</h2>
+          <p className="brief-memo-label">{copy.decisionMemo}</p>
         </div>
         <div className="brief-actions">
           <button className="brief-download" type="button" onClick={downloadBrief}>
@@ -99,6 +100,10 @@ export function DecisionBrief({ analysis, copy }: DecisionBriefProps) {
           <p>{copy.contextBody}</p>
         </article>
         <article>
+          <h3>{copy.recommendedDecision}</h3>
+          <p>{selectedCard.recommendation}</p>
+        </article>
+        <article>
           <h3>{copy.whyNow}</h3>
           <p>{copy.whyNowBody}</p>
         </article>
@@ -108,10 +113,6 @@ export function DecisionBrief({ analysis, copy }: DecisionBriefProps) {
         <article className="brief-wide">
           <h3>{copy.problemSignal}</h3>
           <p>{selectedCluster.description}</p>
-        </article>
-        <article>
-          <h3>{copy.recommendedDecision}</h3>
-          <p>{selectedCard.recommendation}</p>
         </article>
         <article>
           <h3>{copy.userScenario}</h3>
