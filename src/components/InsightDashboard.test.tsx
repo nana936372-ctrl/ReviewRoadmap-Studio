@@ -16,7 +16,15 @@ describe('InsightDashboard', () => {
     expect(screen.getByText(/Crashes during long drafts/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Signal map/i)).toBeInTheDocument();
     expect(screen.getAllByLabelText(/Sentiment balance/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByLabelText(/Red means complaints, bugs, churn risk/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByLabelText(/Amber means mixed intent/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByLabelText(/Green means delight/i).length).toBeGreaterThan(0);
     expect(screen.getByLabelText(/Representative review evidence/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/54 \/ 18 = 3.0/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/min\(95%, 62% \+ 5 x 10%\) = 95%/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/17 \/ 5 = 3.4/i)).toBeInTheDocument();
+    expect(screen.queryAllByLabelText(/formula/i)).toHaveLength(0);
+    expect(screen.queryAllByLabelText(/structured public-review baseline/i)).toHaveLength(0);
     expect(screen.queryByText(/Review evaluation dimensions/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Star rating/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Urgency/i)).not.toBeInTheDocument();

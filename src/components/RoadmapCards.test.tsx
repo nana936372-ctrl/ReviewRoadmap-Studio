@@ -19,6 +19,9 @@ describe('RoadmapCards', () => {
     expect(screen.getByText(/Stabilize draft saving/i)).toBeInTheDocument();
     expect(screen.getByText(/Users trying to finish important writing work/i)).toBeInTheDocument();
     expect(screen.getAllByText(/95% confidence/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByLabelText(/min\(95%, 62% \+ 4 x 10%\) = 95%/i)).toBeInTheDocument();
+    expect(screen.queryAllByLabelText(/formula/i)).toHaveLength(0);
+    expect(screen.queryAllByLabelText(/structured public-review baseline/i)).toHaveLength(0);
     expect(screen.getAllByText(/Decision notes/i)).toHaveLength(analysis.roadmapCards.length);
     expect(screen.getAllByText(/Validation experiment/i)).toHaveLength(analysis.roadmapCards.length);
     expect(screen.getAllByRole('button', { name: /Explain priority score/i })).toHaveLength(analysis.roadmapCards.length);

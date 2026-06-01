@@ -1,19 +1,39 @@
 import { BarChart3, Quote } from 'lucide-react';
-import type { AnalysisResult, SignalLabel } from '../domain/types';
+import type { AnalysisResult, Sentiment, SignalLabel } from '../domain/types';
 import type { AppCopy } from '../i18n/copy';
+import {
+  CONFIDENCE_BASE_FACTORS,
+  CONFIDENCE_BASE_PERCENT,
+  CONFIDENCE_CAP_PERCENT,
+  CONFIDENCE_PER_REVIEW_PERCENT
+} from '../lib/analysis/scoring';
 
 interface InsightDashboardProps {
   analysis: AnalysisResult;
   copy: AppCopy['dashboard'];
 }
 
+function formatCalculationNumber(value: number): string {
+  return Number.isInteger(value) ? String(value) : value.toFixed(1);
+}
+
 export function InsightDashboard({ analysis, copy }: InsightDashboardProps) {
   const topClusters = analysis.clusters.slice(0, 6);
   const hasReviews = analysis.reviews.length > 0;
   const hasClusters = topClusters.length > 0;
+  const ratingTotal = analysis.reviews.reduce((sum, review) => sum + review.rating, 0);
   const averageRating = hasReviews
-    ? analysis.reviews.reduce((sum, review) => sum + review.rating, 0) / analysis.reviews.length
+    ? ratingTotal / analysis.reviews.length
     : null;
+  const averageRatingLabel = averageRating === null ? copy.noRating : copy.averageRating(averageRating.toFixed(1));
+  const averageRatingCalculation =
+    averageRating === null
+      ? null
+      : copy.averageRatingCalculation({
+          ratingTotal: formatCalculationNumber(ratingTotal),
+          reviewCount: analysis.reviews.length,
+          result: averageRating.toFixed(1)
+        });
   const reviewsById = new Map(analysis.reviews.map((review) => [review.id, review]));
   const sentimentRows = topClusters.map((cluster) => {
     const relatedSignals = analysis.signals.filter((signal) => signal.labels.includes(cluster.id as SignalLabel));
@@ -39,9 +59,17 @@ export function InsightDashboard({ analysis, copy }: InsightDashboardProps) {
           <h2 id="intelligence-title">{copy.title}</h2>
           <p className="section-copy">{copy.description}</p>
         </div>
-        <div className="metric-pill">
+        <div
+          aria-label={
+            averageRatingCalculation ? `${averageRatingLabel}. ${averageRatingCalculation}` : averageRatingLabel
+          }
+          className={`metric-pill${averageRatingCalculation ? ' explainable-pill' : ''}`}
+          data-tooltip={averageRatingCalculation ?? undefined}
+          tabIndex={averageRatingCalculation ? 0 : undefined}
+          title={averageRatingCalculation ?? undefined}
+        >
           <BarChart3 aria-hidden="true" size={18} />
-          {averageRating === null ? copy.noRating : copy.averageRating(averageRating.toFixed(1))}
+          {averageRatingLabel}
         </div>
       </div>
 
@@ -53,6 +81,15 @@ export function InsightDashboard({ analysis, copy }: InsightDashboardProps) {
             const sentiment = sentimentRows.find((row) => row.id === cluster.id);
             const totalSignals =
               (sentiment?.negative ?? 0) + (sentiment?.mixed ?? 0) + (sentiment?.positive ?? 0) || 1;
+            const sentimentSegments: {
+              sentiment: Sentiment;
+              count: number;
+              className: string;
+            }[] = [
+              { sentiment: 'negative', count: sentiment?.negative ?? 0, className: 'sentiment-negative' },
+              { sentiment: 'mixed', count: sentiment?.mixed ?? 0, className: 'sentiment-mixed' },
+              { sentiment: 'positive', count: sentiment?.positive ?? 0, className: 'sentiment-positive' }
+            ];
 
             return (
               <article className="signal-card" key={cluster.id}>
@@ -62,25 +99,73 @@ export function InsightDashboard({ analysis, copy }: InsightDashboardProps) {
                 </div>
                 <p>{cluster.description}</p>
                 <div className="signal-card-meta">
-                  <span>{copy.confidence(Math.round(cluster.confidence * 100))}</span>
-                  <span>{copy.rating(cluster.averageRating.toFixed(1))}</span>
+                  {(() => {
+                    const confidencePercent = Math.round(cluster.confidence * 100);
+                    const confidenceCalculation = copy.confidenceCalculation({
+                      baseFactors: CONFIDENCE_BASE_FACTORS,
+                      basePercent: CONFIDENCE_BASE_PERCENT,
+                      capPercent: CONFIDENCE_CAP_PERCENT,
+                      perReviewPercent: CONFIDENCE_PER_REVIEW_PERCENT,
+                      resultPercent: confidencePercent,
+                      reviewCount: cluster.reviewCount
+                    });
+                    const confidenceLabel = copy.confidence(confidencePercent);
+
+                    return (
+                      <span
+                        aria-label={`${confidenceLabel}. ${confidenceCalculation}`}
+                        className="explainable-pill"
+                        data-tooltip={confidenceCalculation}
+                        tabIndex={0}
+                        title={confidenceCalculation}
+                      >
+                        {confidenceLabel}
+                      </span>
+                    );
+                  })()}
+                  {(() => {
+                    const clusterRating = cluster.averageRating.toFixed(1);
+                    const clusterRatingTotal = cluster.averageRating * cluster.reviewCount;
+                    const ratingCalculation = copy.ratingCalculation({
+                      ratingTotal: formatCalculationNumber(clusterRatingTotal),
+                      reviewCount: cluster.reviewCount,
+                      result: clusterRating
+                    });
+                    const ratingLabel = copy.rating(clusterRating);
+
+                    return (
+                      <span
+                        aria-label={`${ratingLabel}. ${ratingCalculation}`}
+                        className="explainable-pill"
+                        data-tooltip={ratingCalculation}
+                        tabIndex={0}
+                        title={ratingCalculation}
+                      >
+                        {ratingLabel}
+                      </span>
+                    );
+                  })()}
                 </div>
                 <div className="sentiment-meter" aria-label={`${copy.sentimentBalanceLabel}: ${cluster.name}`}>
-                  <span
-                    className="sentiment-negative"
-                    style={{ width: `${((sentiment?.negative ?? 0) / totalSignals) * 100}%` }}
-                    title={`${copy.table.negative}: ${sentiment?.negative ?? 0}`}
-                  />
-                  <span
-                    className="sentiment-mixed"
-                    style={{ width: `${((sentiment?.mixed ?? 0) / totalSignals) * 100}%` }}
-                    title={`${copy.table.mixed}: ${sentiment?.mixed ?? 0}`}
-                  />
-                  <span
-                    className="sentiment-positive"
-                    style={{ width: `${((sentiment?.positive ?? 0) / totalSignals) * 100}%` }}
-                    title={`${copy.table.positive}: ${sentiment?.positive ?? 0}`}
-                  />
+                  {sentimentSegments
+                    .filter((segment) => segment.count > 0)
+                    .map((segment) => {
+                      const label = `${copy.sentimentValues[segment.sentiment]}: ${segment.count}. ${
+                        copy.sentimentMeanings[segment.sentiment]
+                      }`;
+
+                      return (
+                        <span
+                          aria-label={label}
+                          className={`sentiment-segment ${segment.className}`}
+                          data-tooltip={label}
+                          key={segment.sentiment}
+                          style={{ width: `${(segment.count / totalSignals) * 100}%` }}
+                          tabIndex={0}
+                          title={label}
+                        />
+                      );
+                    })}
                 </div>
               </article>
             );

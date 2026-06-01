@@ -44,11 +44,46 @@ describe('App', () => {
     expect(screen.getByRole('heading', { name: /Roadmap decisions/i })).toBeInTheDocument();
   });
 
+  it('opens a calculation guide from the hero help button', () => {
+    renderApp(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Open calculation guide/i }));
+
+    expect(screen.getByRole('heading', { name: /Calculation guide/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Rating formula/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Confidence/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Priority score/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Sentiment meter/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Brief evaluation/i })).toBeInTheDocument();
+    expect(screen.getAllByText(/Unified formula: rating total \/ review count/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Initial confidence: 40% structured public-review baseline \+ 10% star rating \+ 8% quotable text \+ 4% product signal = 62%/i)).toBeInTheDocument();
+    expect(screen.getByText(/frequency 22% \+ severity 28%/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Back to overview/i }));
+
+    expect(screen.getByRole('heading', { name: /Roadmap decisions/i })).toBeInTheDocument();
+  });
+
+  it('shows the unified formulas in Chinese calculation guide', () => {
+    renderApp(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: /中文/i }));
+    fireEvent.click(screen.getByRole('button', { name: /打开计算说明/i }));
+
+    expect(screen.getByRole('heading', { name: /评分统一公式/i })).toBeInTheDocument();
+    expect(screen.getAllByText(/统一公式：评分总和 \/ 评论数/i).length).toBeGreaterThan(0);
+    expect(
+      screen.getByText(/初始置信度：结构化公开评论基线 40% \+ 星级评分 10% \+ 可引用文本 8% \+ 产品信号匹配 4% = 62%/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText(/当前：min\(95%, 62% \+ 5 x 10%\) = 95%/i)).toBeInTheDocument();
+  });
+
   it('switches the product interface to Chinese', () => {
     renderApp(<App />);
 
     fireEvent.click(screen.getByRole('button', { name: /中文/i }));
 
+    expect(screen.getByRole('button', { name: /打开计算说明/i })).toBeInTheDocument();
     expect(screen.getByText(/把杂乱的 App Store 评论转化为洞察聚类/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/首要决策/i)).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /分析 App Store 评论样本/i })).toBeInTheDocument();

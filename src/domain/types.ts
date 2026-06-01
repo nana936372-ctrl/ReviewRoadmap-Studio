@@ -79,6 +79,7 @@ export interface RoadmapCard {
   riskDimensions: EvaluationDimension[];
   evidenceQuotes: string[];
   userScenario: string;
+  supportingReviewCount: number;
   targetMetric: string;
   validationExperiment: string;
   risks: string;

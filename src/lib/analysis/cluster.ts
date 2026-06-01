@@ -1,4 +1,5 @@
 import type { InsightCluster, Language, Review, ReviewSignal, SignalLabel } from '../../domain/types';
+import { confidenceScoreForReviewCount } from './scoring';
 
 const CLUSTER_COPY: Record<Language, Record<SignalLabel, { name: string; description: string; scenario: string }>> = {
   en: {
@@ -104,7 +105,7 @@ export function buildInsightClusters(
         .filter((review): review is Review => Boolean(review));
       const ratingTotal = clusterReviews.reduce((sum, review) => sum + review.rating, 0);
       const averageRating = clusterReviews.length > 0 ? round(ratingTotal / clusterReviews.length) : 0;
-      const confidence = round(Math.min(0.95, 0.62 + clusterSignals.length * 0.1));
+      const confidence = confidenceScoreForReviewCount(clusterSignals.length);
       const copy = CLUSTER_COPY[language][label];
 
       return {

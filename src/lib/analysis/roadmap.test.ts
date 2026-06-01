@@ -45,6 +45,7 @@ describe('generateRoadmapCards', () => {
     expect(cards[0].title).toBe('Stabilize draft saving and export reliability');
     expect(cards[0].evidenceQuotes).toEqual(['Lost work: The draft disappeared.']);
     expect(cards[0].userScenario).toBe('Users finishing client work.');
+    expect(cards[0].supportingReviewCount).toBe(4);
     expect(cards[0].scoreFormula).toContain('frequency 22%');
     expect(cards[0].scoreDimensions.map((dimension) => dimension.id)).toEqual([
       'frequency',

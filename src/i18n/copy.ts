@@ -1,4 +1,13 @@
 import type { Language, RoadmapCard, Sentiment, SignalLabel, Urgency } from '../domain/types';
+import type { ConfidenceBaseFactors } from '../lib/analysis/scoring';
+
+function englishConfidenceBaseBreakdown(baseFactors: ConfidenceBaseFactors, basePercent: number): string {
+  return `${baseFactors.structuredReviewSource}% structured public-review baseline + ${baseFactors.starRating}% star rating + ${baseFactors.quotableText}% quotable text + ${baseFactors.productSignal}% product signal = ${basePercent}%`;
+}
+
+function chineseConfidenceBaseBreakdown(baseFactors: ConfidenceBaseFactors, basePercent: number): string {
+  return `结构化公开评论基线 ${baseFactors.structuredReviewSource}% + 星级评分 ${baseFactors.starRating}% + 可引用文本 ${baseFactors.quotableText}% + 产品信号匹配 ${baseFactors.productSignal}% = ${basePercent}%`;
+}
 
 export const languageOptions: { code: Language; label: string }[] = [
   { code: 'en', label: 'English' },
@@ -16,6 +25,129 @@ export const appCopy = {
       reviewsAnalyzed: (count: number) => `${count} reviews analyzed`,
       insightClusters: (count: number) => `${count} insight clusters`,
       roadmapCards: (count: number) => `${count} roadmap cards`
+    },
+    methodology: {
+      open: 'Open calculation guide',
+      eyebrow: 'Methodology',
+      title: 'Calculation guide',
+      description:
+        'A single reference page for every visible number, percentage, score, and evaluation dimension in the demo.',
+      back: 'Back to overview',
+      currentSample: 'Current sample',
+      principle: 'Principle',
+      calculation: 'Calculation',
+      dimensions: 'Dimensions',
+      modules: {
+        dataScope: {
+          title: 'Hero and sample scope',
+          body: 'The hero numbers come directly from the analyzed sample and generated artifacts.',
+          reviews: (count: number) => `${count} normalized review records after cleaning empty input.`,
+          clusters: (count: number) => `${count} insight clusters grouped by the primary product signal.`,
+          roadmapCards: (count: number) => `${count} roadmap cards generated as Fix, Improve, and Explore decisions.`,
+          topDecision: (score: number) => `Top decision displays the first roadmap card and its ${score} priority score.`
+        },
+        averageRating: {
+          title: 'Rating formula',
+          body: 'Average rating and theme rating use the same formula; only the review scope changes.',
+          formula: ({ ratingTotal, reviewCount, result }: { ratingTotal: string; reviewCount: number; result: string }) =>
+            `Unified formula: rating total / review count. Scope: all reviews. Current: ${ratingTotal} / ${reviewCount} = ${result}`,
+          dimensions:
+            'Global average rating uses all analyzed reviews; theme rating uses only reviews assigned to that theme.'
+        },
+        confidence: {
+          title: 'Confidence',
+          body: 'Used by insight clusters and roadmap cards to show how much repeated evidence supports the signal.',
+          formula: ({
+            baseFactors,
+            basePercent,
+            capPercent,
+            perReviewPercent,
+            rawPercent,
+            resultPercent,
+            reviewCount
+          }: {
+            baseFactors: ConfidenceBaseFactors;
+            basePercent: number;
+            capPercent: number;
+            perReviewPercent: number;
+            rawPercent: number;
+            resultPercent: number;
+            reviewCount: number;
+          }) =>
+            `Confidence formula: min(${capPercent}%, initial confidence ${basePercent}% + matching reviews x ${perReviewPercent}%). Initial confidence: ${englishConfidenceBaseBreakdown(
+              baseFactors,
+              basePercent
+            )}. Current: min(${capPercent}%, ${basePercent}% + ${reviewCount} x ${perReviewPercent}%) = ${resultPercent}%. Raw before cap: ${rawPercent}%.`,
+          dimensions:
+            'Initial confidence comes from review data quality; matching review count adds evidence strength; the cap prevents false certainty.'
+        },
+        themeRating: {
+          title: 'Theme rating scope',
+          body: 'This is the same rating formula applied only to reviews inside one insight cluster.',
+          formula: ({ ratingTotal, reviewCount, result }: { ratingTotal: string; reviewCount: number; result: string }) =>
+            `Unified formula: rating total / review count. Scope: matching theme reviews. Current: ${ratingTotal} / ${reviewCount} = ${result}`,
+          dimensions: 'The numerator and denominator both shrink to the current theme, which is why examples differ by card.'
+        },
+        sentiment: {
+          title: 'Sentiment meter',
+          body: 'The red, amber, and green bar translates classified review sentiment into a visual share.',
+          formula: ({
+            mixed,
+            negative,
+            positive,
+            total
+          }: {
+            mixed: number;
+            negative: number;
+            positive: number;
+            total: number;
+          }) =>
+            `Segment width = sentiment count / ${total} related sentiment signals. Current sample: negative ${negative}, mixed ${mixed}, positive ${positive}.`,
+          dimensions: 'Negative means complaint or risk, mixed means needs validation, positive means confirmed value.'
+        },
+        priority: {
+          title: 'Priority score',
+          body: 'Used by roadmap cards to compare which opportunity should receive product attention first.',
+          formula: ({
+            businessImpact,
+            confidence,
+            effort,
+            frequency,
+            rawScore,
+            result,
+            severity
+          }: {
+            businessImpact: number;
+            confidence: number;
+            effort: number;
+            frequency: number;
+            rawScore: string;
+            result: number;
+            severity: number;
+          }) =>
+            `frequency 22% + severity 28% + impact 25% + confidence 15% - effort 10%. Current top card: (${frequency}, ${severity}, ${businessImpact}, ${confidence}, ${effort}) = ${rawScore}, normalized to ${result}.`,
+          dimensions:
+            'Frequency, severity, business impact, confidence, and effort are scored from 1 to 5; effort is subtracted.'
+        },
+        decisionDimensions: {
+          title: 'Decision dimensions',
+          body: 'Recommendation, metric, experiment, and risk blocks are not free text; each one keeps a rationale and evidence link.',
+          formula: (count: number) => `${count} evaluation dimensions are attached to the top decision detail view.`,
+          dimensions: 'Checks recommendation basis, metric fit, experiment quality, and risk control.'
+        },
+        workflow: {
+          title: 'AI workflow numbers',
+          body: 'The workflow stage count describes the explainable analysis chain, not an AI confidence score.',
+          formula: (count: number) => `${count} stages: normalize, classify, cluster, score, and generate roadmap cards.`,
+          dimensions: 'Each stage exposes the evaluation method used before the next stage consumes its output.'
+        },
+        brief: {
+          title: 'Brief evaluation',
+          body: 'The one-page brief is generated from the selected top roadmap decision and its supporting cluster.',
+          formula: (count: number) => `${count} brief dimensions are shown: top score factors plus decision, metric, experiment, and risk checks.`,
+          dimensions: 'Brief fields reuse the same evidence, scoring dimensions, metric, experiment, and risk rationale.'
+        }
+      }
     },
     input: {
       eyebrow: 'Demo data source',
@@ -53,6 +185,41 @@ export const appCopy = {
       reviews: (count: number) => `${count} reviews`,
       confidence: (value: number) => `${value}% confidence`,
       rating: (value: string) => `${value} rating`,
+      averageRatingCalculation: ({
+        ratingTotal,
+        reviewCount,
+        result
+      }: {
+        ratingTotal: string;
+        reviewCount: number;
+        result: string;
+      }) => `${ratingTotal} / ${reviewCount} = ${result}`,
+      confidenceCalculation: ({
+        basePercent,
+        capPercent,
+        perReviewPercent,
+        resultPercent,
+        reviewCount
+      }: {
+        baseFactors: ConfidenceBaseFactors;
+        basePercent: number;
+        capPercent: number;
+        perReviewPercent: number;
+        resultPercent: number;
+        reviewCount: number;
+      }) => {
+        return `min(${capPercent}%, ${basePercent}% + ${reviewCount} x ${perReviewPercent}%) = ${resultPercent}%`;
+      },
+      ratingCalculation: ({
+        ratingTotal,
+        reviewCount,
+        result
+      }: {
+        ratingTotal: string;
+        reviewCount: number;
+        result: string;
+      }) =>
+        `${ratingTotal} / ${reviewCount} = ${result}`,
       signalMapLabel: 'Signal map',
       sentimentBalanceLabel: 'Sentiment balance',
       sentimentLabel: 'Sentiment by theme',
@@ -77,6 +244,11 @@ export const appCopy = {
         negative: 'Negative',
         mixed: 'Mixed',
         positive: 'Positive'
+      } satisfies Record<Sentiment, string>,
+      sentimentMeanings: {
+        negative: 'Red means complaints, bugs, churn risk, or trust-damaging feedback.',
+        mixed: 'Amber means mixed intent, unclear sentiment, or feedback that needs validation.',
+        positive: 'Green means delight, value confirmation, or evidence worth amplifying.'
       } satisfies Record<Sentiment, string>,
       urgencyValues: {
         low: 'Low',
@@ -111,6 +283,22 @@ export const appCopy = {
         effort: 'Effort'
       } satisfies Record<keyof RoadmapCard['scoringFactors'], string>,
       confidence: (value: number) => `${value}% confidence`,
+      confidenceCalculation: ({
+        basePercent,
+        capPercent,
+        perReviewPercent,
+        resultPercent,
+        reviewCount
+      }: {
+        baseFactors: ConfidenceBaseFactors;
+        basePercent: number;
+        capPercent: number;
+        perReviewPercent: number;
+        resultPercent: number;
+        reviewCount: number;
+      }) => {
+        return `min(${capPercent}%, ${basePercent}% + ${reviewCount} x ${perReviewPercent}%) = ${resultPercent}%`;
+      },
       scoringFactors: (type: string) => `${type} scoring factors`,
       explainPriorityScore: 'Explain priority score',
       priorityFormula: 'Priority formula',
@@ -191,6 +379,124 @@ export const appCopy = {
       insightClusters: (count: number) => `${count} 个洞察聚类`,
       roadmapCards: (count: number) => `${count} 张路线图卡片`
     },
+    methodology: {
+      open: '打开计算说明',
+      eyebrow: '方法说明',
+      title: '计算说明',
+      description: '集中解释 demo 中所有可见数字、百分比、评分和评估维度的来源。',
+      back: '返回总览',
+      currentSample: '当前样本',
+      principle: '计算原理',
+      calculation: '计算方式',
+      dimensions: '评估维度',
+      modules: {
+        dataScope: {
+          title: '首页与样本范围',
+          body: '首页数字直接来自当前评论样本和生成后的分析产物。',
+          reviews: (count: number) => `清洗空输入后保留 ${count} 条标准化评论记录。`,
+          clusters: (count: number) => `按主要产品信号聚合出 ${count} 个洞察聚类。`,
+          roadmapCards: (count: number) => `生成 ${count} 张路线图卡片，对应修复、优化和探索三类决策。`,
+          topDecision: (score: number) => `首要决策展示第一张路线图卡片及其 ${score} 分优先级。`
+        },
+        averageRating: {
+          title: '评分统一公式',
+          body: '平均评分和主题评分使用同一个公式，只是评论范围不同。',
+          formula: ({ ratingTotal, reviewCount, result }: { ratingTotal: string; reviewCount: number; result: string }) =>
+            `统一公式：评分总和 / 评论数。范围：全部评论。当前：${ratingTotal} / ${reviewCount} = ${result}`,
+          dimensions: '全局平均评分使用全部已分析评论；主题评分只使用归入该主题的评论。'
+        },
+        confidence: {
+          title: '置信度',
+          body: '用于洞察聚类和路线图卡片，表示该信号有多少重复证据支撑。',
+          formula: ({
+            baseFactors,
+            basePercent,
+            capPercent,
+            perReviewPercent,
+            rawPercent,
+            resultPercent,
+            reviewCount
+          }: {
+            baseFactors: ConfidenceBaseFactors;
+            basePercent: number;
+            capPercent: number;
+            perReviewPercent: number;
+            rawPercent: number;
+            resultPercent: number;
+            reviewCount: number;
+          }) =>
+            `置信度公式：min(${capPercent}%, 初始置信度 ${basePercent}% + 相关评论数 x ${perReviewPercent}%)。初始置信度：${chineseConfidenceBaseBreakdown(
+              baseFactors,
+              basePercent
+            )}。当前：min(${capPercent}%, ${basePercent}% + ${reviewCount} x ${perReviewPercent}%) = ${resultPercent}%。封顶前为 ${rawPercent}%。`,
+          dimensions: '初始置信度来自评论数据质量；相关评论数增加证据强度；封顶用于避免把样本证据伪装成绝对确定。'
+        },
+        themeRating: {
+          title: '主题评分范围',
+          body: '这是同一个评分公式，只应用在一个洞察主题内部的评论上。',
+          formula: ({ ratingTotal, reviewCount, result }: { ratingTotal: string; reviewCount: number; result: string }) =>
+            `统一公式：评分总和 / 评论数。范围：当前主题相关评论。当前：${ratingTotal} / ${reviewCount} = ${result}`,
+          dimensions: '分子和分母都会随当前主题变化，所以不同卡片的代入数字不同，但公式一致。'
+        },
+        sentiment: {
+          title: '情绪条',
+          body: '红、黄、绿分段条把分类后的评论情绪转成可视化占比。',
+          formula: ({
+            mixed,
+            negative,
+            positive,
+            total
+          }: {
+            mixed: number;
+            negative: number;
+            positive: number;
+            total: number;
+          }) => `分段宽度 = 情绪数量 / ${total} 个相关情绪信号。当前样本：负向 ${negative}，混合 ${mixed}，正向 ${positive}。`,
+          dimensions: '负向代表投诉或风险，混合代表需要验证，正向代表已被验证的价值。'
+        },
+        priority: {
+          title: '优先级分数',
+          body: '用于路线图卡片，帮助比较哪个机会应优先投入产品资源。',
+          formula: ({
+            businessImpact,
+            confidence,
+            effort,
+            frequency,
+            rawScore,
+            result,
+            severity
+          }: {
+            businessImpact: number;
+            confidence: number;
+            effort: number;
+            frequency: number;
+            rawScore: string;
+            result: number;
+            severity: number;
+          }) =>
+            `频次 22% + 严重度 28% + 业务影响 25% + 置信度 15% - 成本 10%。当前首要卡片：(${frequency}, ${severity}, ${businessImpact}, ${confidence}, ${effort}) = ${rawScore}，归一后为 ${result}。`,
+          dimensions: '频次、严重度、业务影响、置信度和成本按 1 到 5 分评估；成本会从分数中扣除。'
+        },
+        decisionDimensions: {
+          title: '决策评估维度',
+          body: '建议、指标、实验和风险并不是自由文案，每一项都保留判断依据和证据连接。',
+          formula: (count: number) => `首要决策详情页绑定 ${count} 个评估维度。`,
+          dimensions: '检查建议依据、指标匹配、实验质量和风险控制。'
+        },
+        workflow: {
+          title: 'AI 工作流数字',
+          body: '工作流阶段数描述可解释分析链路，不是 AI 置信度。',
+          formula: (count: number) => `${count} 个阶段：标准化、分类、聚类、评分、生成路线图卡片。`,
+          dimensions: '每个阶段都展示评估方式，并把输出交给下一阶段使用。'
+        },
+        brief: {
+          title: 'Brief 评估',
+          body: '一页 Brief 来自首要路线图决策及其支持聚类。',
+          formula: (count: number) => `Brief 展示 ${count} 个维度：核心评分因素，加上建议、指标、实验和风险判断。`,
+          dimensions: 'Brief 字段复用相同证据、评分维度、指标、实验和风险依据。'
+        }
+      }
+    },
     input: {
       eyebrow: '演示数据源',
       title: '分析 App Store 评论样本',
@@ -226,6 +532,40 @@ export const appCopy = {
       reviews: (count: number) => `${count} 条评论`,
       confidence: (value: number) => `${value}% 置信度`,
       rating: (value: string) => `${value} 评分`,
+      averageRatingCalculation: ({
+        ratingTotal,
+        reviewCount,
+        result
+      }: {
+        ratingTotal: string;
+        reviewCount: number;
+        result: string;
+      }) => `${ratingTotal} / ${reviewCount} = ${result}`,
+      confidenceCalculation: ({
+        basePercent,
+        capPercent,
+        perReviewPercent,
+        resultPercent,
+        reviewCount
+      }: {
+        baseFactors: ConfidenceBaseFactors;
+        basePercent: number;
+        capPercent: number;
+        perReviewPercent: number;
+        resultPercent: number;
+        reviewCount: number;
+      }) => {
+        return `min(${capPercent}%, ${basePercent}% + ${reviewCount} x ${perReviewPercent}%) = ${resultPercent}%`;
+      },
+      ratingCalculation: ({
+        ratingTotal,
+        reviewCount,
+        result
+      }: {
+        ratingTotal: string;
+        reviewCount: number;
+        result: string;
+      }) => `${ratingTotal} / ${reviewCount} = ${result}`,
       signalMapLabel: '信号地图',
       sentimentBalanceLabel: '情绪分布',
       sentimentLabel: '按主题查看情绪倾向',
@@ -250,6 +590,11 @@ export const appCopy = {
         negative: '负向',
         mixed: '混合',
         positive: '正向'
+      } satisfies Record<Sentiment, string>,
+      sentimentMeanings: {
+        negative: '红色代表投诉、缺陷、流失风险或损害信任的反馈。',
+        mixed: '黄色代表意图混合、情绪不明确或需要继续验证的反馈。',
+        positive: '绿色代表喜爱点、价值被验证或值得放大的正向证据。'
       } satisfies Record<Sentiment, string>,
       urgencyValues: {
         low: '低',
@@ -284,6 +629,22 @@ export const appCopy = {
         effort: '成本'
       } satisfies Record<keyof RoadmapCard['scoringFactors'], string>,
       confidence: (value: number) => `${value}% 置信度`,
+      confidenceCalculation: ({
+        basePercent,
+        capPercent,
+        perReviewPercent,
+        resultPercent,
+        reviewCount
+      }: {
+        baseFactors: ConfidenceBaseFactors;
+        basePercent: number;
+        capPercent: number;
+        perReviewPercent: number;
+        resultPercent: number;
+        reviewCount: number;
+      }) => {
+        return `min(${capPercent}%, ${basePercent}% + ${reviewCount} x ${perReviewPercent}%) = ${resultPercent}%`;
+      },
       scoringFactors: (type: string) => `${type}评分因素`,
       explainPriorityScore: '解释优先级分数',
       priorityFormula: '优先级公式',

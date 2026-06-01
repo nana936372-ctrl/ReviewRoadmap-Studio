@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
+import { HelpCircle } from 'lucide-react';
 import { AiWorkflow } from './components/AiWorkflow';
+import { CalculationGuidePage } from './components/CalculationGuidePage';
 import { DecisionBrief } from './components/DecisionBrief';
 import { InsightDashboard } from './components/InsightDashboard';
 import { InputPanel } from './components/InputPanel';
@@ -17,6 +19,7 @@ export default function App() {
   const [analysisRunCount, setAnalysisRunCount] = useState(1);
   const [language, setLanguage] = useState<Language>('en');
   const [selectedRoadmapCardId, setSelectedRoadmapCardId] = useState<string | null>(null);
+  const [showCalculationGuide, setShowCalculationGuide] = useState(false);
   const copy = appCopy[language];
   const analysis = useMemo(
     () => analyzeReviews(sampleReviews, '2026-05-28T08:00:00.000Z', language),
@@ -37,9 +40,31 @@ export default function App() {
     }, 0);
   }, [selectedRoadmapCardId]);
 
+  useEffect(() => {
+    if (!showCalculationGuide) {
+      return;
+    }
+
+    window.setTimeout(() => {
+      document.getElementById('calculation-guide-page')?.scrollIntoView?.({ block: 'start', behavior: 'smooth' });
+    }, 0);
+  }, [showCalculationGuide]);
+
   return (
     <main className="app-shell">
       <section className="hero-band">
+        <button
+          aria-label={copy.methodology.open}
+          className="hero-help-button"
+          title={copy.methodology.open}
+          type="button"
+          onClick={() => {
+            setSelectedRoadmapCardId(null);
+            setShowCalculationGuide(true);
+          }}
+        >
+          <HelpCircle aria-hidden="true" size={22} />
+        </button>
         <div>
           <p className="eyebrow">{copy.hero.eyebrow}</p>
           <h1>ReviewRoadmap Studio</h1>
@@ -75,7 +100,13 @@ export default function App() {
         </div>
       </section>
 
-      {selectedRoadmapCard ? (
+      {showCalculationGuide ? (
+        <CalculationGuidePage
+          analysis={analysis}
+          copy={copy.methodology}
+          onBack={() => setShowCalculationGuide(false)}
+        />
+      ) : selectedRoadmapCard ? (
         <ScoreDetailPage
           card={selectedRoadmapCard}
           copy={copy.scoreDetail}
@@ -90,6 +121,7 @@ export default function App() {
             onAppUrlChange={setAppUrl}
             onAnalyze={() => {
               setSelectedRoadmapCardId(null);
+              setShowCalculationGuide(false);
               setAnalysisRunCount((count) => count + 1);
             }}
           />
@@ -97,7 +129,10 @@ export default function App() {
           <RoadmapCards
             cards={analysis.roadmapCards}
             copy={copy.roadmap}
-            onScoreSelect={setSelectedRoadmapCardId}
+            onScoreSelect={(cardId) => {
+              setShowCalculationGuide(false);
+              setSelectedRoadmapCardId(cardId);
+            }}
           />
           <AiWorkflow copy={copy.workflow} language={language} />
           <DecisionBrief analysis={analysis} copy={copy.brief} />

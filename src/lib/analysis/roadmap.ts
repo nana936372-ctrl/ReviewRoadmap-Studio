@@ -1,13 +1,8 @@
 import type { EvaluationDimension, InsightCluster, Language, RoadmapCard, RoadmapType } from '../../domain/types';
+import { PRIORITY_SCORE_WEIGHTS } from './scoring';
 
 const TYPE_ORDER: RoadmapType[] = ['fix', 'improve', 'explore'];
-const SCORE_WEIGHTS = {
-  frequency: 0.22,
-  severity: 0.28,
-  businessImpact: 0.25,
-  confidence: 0.15,
-  effort: -0.1
-} satisfies Record<keyof RoadmapCard['scoringFactors'], number>;
+const SCORE_WEIGHTS = PRIORITY_SCORE_WEIGHTS;
 
 const SCORE_ORDER: Array<keyof RoadmapCard['scoringFactors']> = [
   'frequency',
@@ -424,6 +419,7 @@ function createCardPayload(
     ...decisionDimensions,
     evidenceQuotes: cluster.representativeQuotes,
     userScenario: cluster.suspectedUserScenario,
+    supportingReviewCount: cluster.reviewCount,
     targetMetric: copy.targetMetric,
     validationExperiment: copy.validationExperiment,
     risks: copy.risks,
