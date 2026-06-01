@@ -1,14 +1,35 @@
 import { CalendarDays, FileUp, Search, Sparkles, Tags } from 'lucide-react';
+import type { TimeWindow } from '../domain/types';
 import type { AppCopy } from '../i18n/copy';
+
+interface InputPanelStatus {
+  tone: 'neutral' | 'success' | 'warning' | 'error';
+  title: string;
+  detail: string;
+}
 
 interface InputPanelProps {
   appUrl: string;
   copy: AppCopy['input'];
+  isAnalyzing: boolean;
   onAppUrlChange: (value: string) => void;
-  onAnalyze: () => void;
+  onAnalyze: () => void | Promise<void>;
+  onTimeWindowChange: (value: TimeWindow) => void;
+  status: InputPanelStatus;
+  timeWindow: TimeWindow;
+  timeWindowLabel: string;
 }
 
-export function InputPanel({ appUrl, copy, onAppUrlChange, onAnalyze }: InputPanelProps) {
+export function InputPanel({
+  appUrl,
+  copy,
+  isAnalyzing,
+  onAppUrlChange,
+  onAnalyze,
+  onTimeWindowChange,
+  status,
+  timeWindow
+}: InputPanelProps) {
   return (
     <section className="input-panel compact-input" aria-labelledby="input-title">
       <div className="input-panel-header">
@@ -17,9 +38,9 @@ export function InputPanel({ appUrl, copy, onAppUrlChange, onAnalyze }: InputPan
           <h2 id="input-title">{copy.title}</h2>
           <p className="section-copy">{copy.description}</p>
         </div>
-        <button className="primary-button" type="button" onClick={onAnalyze}>
+        <button className="primary-button" type="button" disabled={isAnalyzing} onClick={() => void onAnalyze()}>
           <Sparkles aria-hidden="true" size={18} />
-          {copy.analyze}
+          {isAnalyzing ? copy.analyzing : copy.analyze}
         </button>
       </div>
 
@@ -61,10 +82,14 @@ export function InputPanel({ appUrl, copy, onAppUrlChange, onAnalyze }: InputPan
           </label>
           <div className="control-row">
             <CalendarDays aria-hidden="true" size={18} />
-            <select id="time-window" defaultValue="may-2026">
-              <option value="may-2026">{copy.timeWindowOptions.may2026}</option>
-              <option value="last-30">{copy.timeWindowOptions.last30}</option>
-              <option value="last-90">{copy.timeWindowOptions.last90}</option>
+            <select
+              id="time-window"
+              value={timeWindow}
+              onChange={(event) => onTimeWindowChange(event.target.value as TimeWindow)}
+            >
+              <option value="may-2026">{copy.timeWindowOptions['may-2026']}</option>
+              <option value="last-30">{copy.timeWindowOptions['last-30']}</option>
+              <option value="last-90">{copy.timeWindowOptions['last-90']}</option>
             </select>
           </div>
         </div>
@@ -86,7 +111,10 @@ export function InputPanel({ appUrl, copy, onAppUrlChange, onAnalyze }: InputPan
         </div>
       </details>
 
-      <p className="setup-summary">{copy.summary}</p>
+      <div className={`setup-status ${status.tone}`} role="status" aria-live="polite">
+        <span>{status.title}</span>
+        <span>{status.detail}</span>
+      </div>
     </section>
   );
 }

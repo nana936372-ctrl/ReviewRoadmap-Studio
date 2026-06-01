@@ -14,6 +14,8 @@ export type RoadmapType = 'fix' | 'improve' | 'explore';
 
 export type Language = 'en' | 'zh';
 
+export type TimeWindow = 'may-2026' | 'last-30' | 'last-90';
+
 export interface EvaluationDimension {
   id: string;
   label: string;
@@ -26,7 +28,7 @@ export interface EvaluationDimension {
 
 export interface RawReview {
   id: string;
-  source: 'app-store-sample';
+  source: 'app-store-sample' | 'app-store-live';
   rating: 1 | 2 | 3 | 4 | 5;
   title: string;
   body: string;

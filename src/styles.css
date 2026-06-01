@@ -1,10 +1,15 @@
 :root {
+  --font-sans-en:
+    "Segoe UI", Inter, -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+    Arial, ui-sans-serif, system-ui, sans-serif;
+  --font-sans-zh:
+    "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", "Noto Sans SC",
+    "Segoe UI", Arial, ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-sans-en);
+
   color: #16201b;
   background: #f6f4ef;
-  font-family:
-    Inter, "SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont,
-    "Segoe UI", "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei",
-    "Noto Sans SC", ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -1210,10 +1215,31 @@ h1 {
   min-width: 0;
 }
 
-.setup-summary {
+.setup-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
   margin: 12px 0 0;
-  color: #6a756e;
+  color: #51645a;
   font-size: 0.88rem;
+}
+
+.setup-status span:first-child {
+  color: #29483c;
+  font-weight: 600;
+}
+
+.setup-status.success span:first-child {
+  color: #1d765f;
+}
+
+.setup-status.warning span:first-child {
+  color: #876926;
+}
+
+.setup-status.error span:first-child {
+  color: #aa3f38;
 }
 
 .sample-details {
@@ -1363,8 +1389,9 @@ h1 {
   box-shadow: 0 10px 24px rgba(23, 39, 31, 0.18);
   content: attr(data-tooltip);
   font-size: 0.78rem;
-  font-weight: 800;
-  line-height: 1.35;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.55;
   white-space: normal;
 }
 
@@ -1646,6 +1673,18 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+.app-shell {
+  font-family: var(--font-sans);
+}
+
+.app-shell:lang(en) {
+  --font-sans: var(--font-sans-en);
+}
+
+.app-shell:lang(zh) {
+  --font-sans: var(--font-sans-zh);
+}
+
 h1,
 h2,
 h3,
@@ -1663,11 +1702,9 @@ summary,
 h1 {
   max-width: 11ch;
   color: #102018;
-  font-family:
-    "SF Pro Display", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    "PingFang SC", "Microsoft YaHei UI", "Noto Sans SC", sans-serif;
+  font-family: var(--font-sans);
   font-size: clamp(3rem, 5.6vw, 4.45rem);
-  font-weight: 760;
+  font-weight: 700;
   line-height: 0.98;
 }
 
@@ -1677,7 +1714,7 @@ h1 {
 .detail-hero h2 {
   color: #102018;
   font-size: clamp(1.62rem, 2.7vw, 2.2rem);
-  font-weight: 730;
+  font-weight: 700;
   line-height: 1.08;
 }
 
@@ -1705,7 +1742,7 @@ h1 {
 .detail-score span {
   color: #49685b;
   font-size: 0.74rem;
-  font-weight: 760;
+  font-weight: 600;
   text-transform: uppercase;
 }
 
@@ -1719,13 +1756,13 @@ h1 {
 .brief-summary h3,
 .workflow-stepper strong {
   color: #14261d;
-  font-weight: 690;
+  font-weight: 600;
 }
 
 .hero-decision strong {
   color: #102018;
   font-size: 1.02rem;
-  font-weight: 690;
+  font-weight: 600;
   line-height: 1.25;
 }
 
@@ -1755,7 +1792,7 @@ h1 {
 .detail-back,
 .language-toggle button,
 .score-button {
-  font-weight: 680;
+  font-weight: 600;
 }
 
 .primary-button,
@@ -1769,10 +1806,15 @@ h1 {
   background: #17624f;
 }
 
+.primary-button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
 .hero-score-value,
 .detail-score strong {
   background: #1d765f;
-  font-weight: 720;
+  font-weight: 700;
 }
 
 .metric-pill,
@@ -1785,11 +1827,11 @@ h1 {
 .dimension-list em,
 .contribution-row span,
 .brief-dimensions strong {
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .signal-card-header span {
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .explainable-pill {
@@ -1830,8 +1872,9 @@ h1 {
   box-shadow: 0 14px 30px rgba(17, 31, 24, 0.18);
   content: attr(data-tooltip);
   font-size: 0.82rem;
-  font-weight: 650;
-  line-height: 1.48;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.55;
   text-align: left;
   white-space: normal;
 }
@@ -1906,8 +1949,9 @@ h1 {
   background: #1d2d24;
   box-shadow: 0 14px 30px rgba(17, 31, 24, 0.18);
   font-size: 0.82rem;
-  font-weight: 650;
-  line-height: 1.48;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.55;
 }
 
 .sentiment-negative {
@@ -2016,7 +2060,7 @@ h1 {
   color: #2c493d;
   background: #fbfdfb;
   font-size: 0.92rem;
-  font-weight: 650;
+  font-weight: 600;
   line-height: 1.45;
 }
 
@@ -2057,7 +2101,7 @@ h1 {
   margin: 0;
   color: #14261d;
   font-size: 1rem;
-  font-weight: 690;
+  font-weight: 600;
 }
 
 .method-card > p {
@@ -2084,7 +2128,7 @@ h1 {
 .method-line dt {
   color: #315044;
   font-size: 0.78rem;
-  font-weight: 760;
+  font-weight: 600;
 }
 
 .method-line dd {

@@ -16,8 +16,9 @@ describe('RoadmapCards', () => {
     expect(screen.getByText('Fix')).toBeInTheDocument();
     expect(screen.getByText('Improve')).toBeInTheDocument();
     expect(screen.getByText('Explore')).toBeInTheDocument();
-    expect(screen.getByText(/Stabilize draft saving/i)).toBeInTheDocument();
-    expect(screen.getByText(/Users trying to finish important writing work/i)).toBeInTheDocument();
+    expect(screen.getByText(/Fix draft recovery and export failure points/i)).toBeInTheDocument();
+    expect(screen.getByText(/Reduce draft-loss, recovery, or export-failure complaints/i)).toBeInTheDocument();
+    expect(screen.getByText(/Users trying to complete an important task/i)).toBeInTheDocument();
     expect(screen.getAllByText(/95% confidence/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByLabelText(/min\(95%, 62% \+ 4 x 10%\) = 95%/i)).toBeInTheDocument();
     expect(screen.queryAllByLabelText(/formula/i)).toHaveLength(0);
@@ -57,12 +58,12 @@ describe('DecisionBrief', () => {
 
     renderApp(<DecisionBrief analysis={analysis} copy={appCopy.zh.brief} />);
 
-    expect(screen.getByText(/用户反馈崩溃、导出失败、同步异常或作品丢失/i)).toBeInTheDocument();
+    expect(screen.getByText(/用户反馈核心操作失败、异常、卡顿或结果不可信/i)).toBeInTheDocument();
     expect(screen.getByText(/决策备忘录/i)).toBeInTheDocument();
     expect(screen.getByText(/为什么现在做/i)).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /成功指标/i })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /下一步行动/i })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /评估维度/i })).toBeInTheDocument();
-    expect(screen.queryByText(/用户希望增加导出、规划视图、可复用设置/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/用户希望产品补齐明确能力、支持现有流程/i)).not.toBeInTheDocument();
   });
 });

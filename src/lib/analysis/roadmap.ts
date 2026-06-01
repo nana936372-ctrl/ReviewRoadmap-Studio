@@ -12,75 +12,499 @@ const SCORE_ORDER: Array<keyof RoadmapCard['scoringFactors']> = [
   'effort'
 ];
 
+interface RoadmapCopy {
+  id: string;
+  title: string;
+  recommendation: string;
+  targetMetric: string;
+  validationExperiment: string;
+  risks: string;
+}
+
+interface OpportunityDetail {
+  title: string;
+  recommendation: string;
+  targetMetric: string;
+  validationExperiment: string;
+  recommendationValue: string;
+  metricValue: string;
+  experimentValue: string;
+  isSpecific: boolean;
+}
+
+type OpportunityThemeCopy = Record<Language, Record<RoadmapType, Omit<OpportunityDetail, 'isSpecific'>>>;
+
 const ROADMAP_COPY: Record<
   Language,
-  Record<
-    RoadmapType,
-    {
-      id: string;
-      title: string;
-      recommendation: string;
-      targetMetric: string;
-      validationExperiment: string;
-      risks: string;
-    }
-  >
+  Record<RoadmapType, RoadmapCopy>
 > = {
   en: {
     fix: {
       id: 'fix-reliability',
-      title: 'Stabilize draft saving and export reliability',
-      recommendation: 'Prioritize auto-save, export recovery, and sync-state visibility before expanding new writing modes.',
-      targetMetric: 'Reduce one-star reliability complaints per 100 reviews.',
+      title: 'Stabilize the core user journey',
+      recommendation: 'Fix the recurring core-task failures visible in reviews before investing in new growth features.',
+      targetMetric: 'Reduce one- and two-star core-task complaints per 100 reviews.',
       validationExperiment:
-        'Ship auto-save recovery messaging to 25% of users and compare lost-draft support mentions for two weeks.',
+        'Ship a focused fix or recovery message to 25% of affected users and compare related support or review mentions for two weeks.',
       risks: 'This may delay visible feature work, but trust issues can suppress retention and paid conversion.'
     },
     improve: {
       id: 'improve-workflow',
-      title: 'Add one high-fit workflow export',
+      title: 'Double down on the strongest proven value',
       recommendation:
-        'Start with Notion-friendly export or preserved formatting because users already describe a clear downstream workflow.',
-      targetMetric: 'Increase completed exports per activated user.',
-      validationExperiment: 'Prototype one export path and measure whether users who export return within seven days.',
-      risks: 'Export breadth can sprawl, so the first version should support one workflow with strong evidence.'
+        'Use the clearest positive evidence and concrete requests to strengthen the use case users already care about.',
+      targetMetric: 'Increase repeat use or completed key actions per activated user.',
+      validationExperiment: 'Prototype one improvement to the proven use case and measure whether users return within seven days.',
+      risks: 'Improvement scope can sprawl, so the first version should support one use case with strong evidence.'
     },
     explore: {
       id: 'explore-onboarding',
-      title: 'Test a guided first-draft setup',
-      recommendation: 'Use a short guided setup that recommends one writing mode and one template based on the user goal.',
-      targetMetric: 'Improve first-session draft completion rate.',
-      validationExperiment: 'A/B test guided setup against the current template picker for new users.',
+      title: 'Test a clearer first-session path',
+      recommendation: 'Use a lightweight guided path that helps new users reach the first meaningful outcome faster.',
+      targetMetric: 'Improve first-session key-action completion rate.',
+      validationExperiment: 'A/B test a guided path against the current entry flow for new users.',
       risks: 'Guidance can feel restrictive to advanced users, so provide a skip path and keep the first question lightweight.'
     }
   },
   zh: {
     fix: {
       id: 'fix-reliability',
-      title: '稳定草稿保存与导出可靠性',
-      recommendation: '先修复自动保存、导出恢复和同步状态提示，再扩展新的写作模式。',
-      targetMetric: '降低每 100 条评论中的一星可靠性投诉数。',
-      validationExperiment: '向 25% 用户发布自动保存恢复提示，并对比两周内丢稿相关支持反馈的变化。',
+      title: '稳定核心使用路径',
+      recommendation: '先处理评论中反复出现的核心任务失败点，再投入新的增长功能。',
+      targetMetric: '降低每 100 条评论中的一到二星核心任务投诉数。',
+      validationExperiment: '向 25% 受影响用户发布聚焦修复或恢复提示，并对比两周内相关支持反馈或评论变化。',
       risks: '这会延后可见的新功能，但信任问题会压低留存和付费转化。'
     },
     improve: {
       id: 'improve-workflow',
-      title: '增加一个高匹配度的工作流导出',
-      recommendation: '优先做 Notion 友好导出或格式保留，因为用户已经明确描述了下游工作流。',
-      targetMetric: '提升激活用户的人均完成导出次数。',
-      validationExperiment: '原型验证一个导出路径，并观察完成导出的用户 7 天内是否回访。',
-      risks: '导出能力容易失控扩张，因此第一版应只服务证据最强的一个工作流。'
+      title: '放大最强的已验证价值',
+      recommendation: '基于最清晰的正向证据和具体需求，强化用户已经在意的核心场景。',
+      targetMetric: '提升激活用户的人均复用或关键动作完成次数。',
+      validationExperiment: '围绕已验证场景原型化一个改进，并观察用户 7 天内是否回访。',
+      risks: '优化范围容易扩张，因此第一版应只服务证据最强的一个使用场景。'
     },
     explore: {
       id: 'explore-onboarding',
-      title: '测试引导式首篇草稿设置',
-      recommendation: '用一个轻量引导，根据用户目标推荐一个写作模式和一个模板。',
-      targetMetric: '提升首次会话的草稿完成率。',
-      validationExperiment: '对新用户 A/B 测试引导式设置与当前模板选择器。',
+      title: '测试更清晰的首次使用路径',
+      recommendation: '用轻量引导帮助新用户更快到达第一个有意义的结果。',
+      targetMetric: '提升首次会话关键动作完成率。',
+      validationExperiment: '对新用户 A/B 测试引导路径与当前入口流程。',
       risks: '引导可能让高级用户觉得受限，因此需要保留跳过路径，并让第一个问题足够轻。'
     }
   }
 };
+
+const OPPORTUNITY_THEMES: Array<{
+  patterns: RegExp[];
+  copy: OpportunityThemeCopy;
+}> = [
+  {
+    patterns: [/打卡/i, /小队/i, /队长/i, /队员/i, /活跃/i, /踢出/i, /学习任务/i, /check-?in/i, /team activity/i],
+    copy: {
+      en: {
+        fix: {
+          title: 'Fix check-in and team activity state mismatches',
+          recommendation:
+            'Prioritize check-in state, member activity rules, and team feedback accuracy so the engagement loop feels trustworthy.',
+          targetMetric: 'Reduce check-in or team-state complaints per 100 reviews.',
+          validationExperiment:
+            'Add state validation and clearer team activity feedback for a limited cohort, then compare related low-star review mentions over two weeks.',
+          recommendationValue: 'Fix check-in and team activity state mismatches',
+          metricValue: 'Check-in/team-state complaint rate',
+          experimentValue: 'Limited rollout on check-in and team-state feedback'
+        },
+        improve: {
+          title: 'Strengthen the proven learning-engagement loop',
+          recommendation:
+            'Build on the check-in and team loop only after the visible status and activity rules are reliable.',
+          targetMetric: 'Increase completed check-ins or team participation among active users.',
+          validationExperiment:
+            'Prototype one clearer reward or team-feedback moment and compare repeat participation within seven days.',
+          recommendationValue: 'Strengthen the proven learning-engagement loop',
+          metricValue: 'Repeat check-in and team participation',
+          experimentValue: 'Focused engagement-loop prototype'
+        },
+        explore: {
+          title: 'Test clearer check-in and team-rule onboarding',
+          recommendation:
+            'Use a lightweight first-run explanation for check-in state, team activity, and rule changes before expanding the system.',
+          targetMetric: 'Improve first-session understanding of check-in and team rules.',
+          validationExperiment:
+            'A/B test a rule explainer against the current flow for new or returning team users.',
+          recommendationValue: 'Test clearer check-in and team-rule onboarding',
+          metricValue: 'Rule-understanding activation behavior',
+          experimentValue: 'Check-in rule explainer A/B test'
+        }
+      },
+      zh: {
+        fix: {
+          title: '修复打卡状态与小队活跃判定异常',
+          recommendation: '优先修复打卡状态、队员活跃判定和小队规则反馈，避免激励机制被用户认为不可信。',
+          targetMetric: '降低每 100 条评论中的打卡/小队异常投诉数。',
+          validationExperiment:
+            '先在打卡与小队页增加状态校验、异常提示和队员活跃规则说明，观察两周内相关差评占比是否下降。',
+          recommendationValue: '修复打卡状态与小队活跃判定异常',
+          metricValue: '打卡/小队异常投诉率',
+          experimentValue: '打卡与小队状态反馈小流量验证'
+        },
+        improve: {
+          title: '强化已验证的学习激励闭环',
+          recommendation: '在状态和规则可信后，再放大学习打卡、小队协作和激励反馈的正向价值。',
+          targetMetric: '提升活跃用户的连续打卡或小队参与次数。',
+          validationExperiment: '围绕一个奖励反馈或小队协作时刻做原型，并观察 7 天内重复参与变化。',
+          recommendationValue: '强化已验证的学习激励闭环',
+          metricValue: '连续打卡与小队参与行为',
+          experimentValue: '学习激励闭环原型验证'
+        },
+        explore: {
+          title: '测试更清晰的打卡/小队规则引导',
+          recommendation: '用轻量首屏说明帮助用户理解打卡状态、小队活跃和规则变化，再决定是否扩展系统。',
+          targetMetric: '提升首次会话对打卡/小队规则的理解率。',
+          validationExperiment: '对新用户或回流用户 A/B 测试规则说明与当前流程。',
+          recommendationValue: '测试更清晰的打卡/小队规则引导',
+          metricValue: '规则理解激活行为',
+          experimentValue: '打卡规则说明 A/B 测试'
+        }
+      }
+    }
+  },
+  {
+    patterns: [
+      /paywall/i,
+      /subscription/i,
+      /pricing/i,
+      /trial/i,
+      /subscribe/i,
+      /price/i,
+      /收费/i,
+      /付费/i,
+      /会员/i,
+      /订阅/i,
+      /价格/i,
+      /试用/i,
+      /权益/i,
+      /限制/i
+    ],
+    copy: {
+      en: {
+        fix: {
+          title: 'Clarify value before subscription moments',
+          recommendation:
+            'Explain included value, limits, and trial expectations before subscription prompts so users are not asked to pay before they understand the product.',
+          targetMetric: 'Reduce value, plan, or limit-clarity complaints per 100 reviews.',
+          validationExperiment:
+            'A/B test a benefit-and-limit explanation before the paywall, then compare paywall exits and pricing-related review mentions.',
+          recommendationValue: 'Clarify value before subscription moments',
+          metricValue: 'Pricing clarity complaint rate',
+          experimentValue: 'Pre-paywall value explanation A/B test'
+        },
+        improve: {
+          title: 'Improve plan comparison for high-intent users',
+          recommendation:
+            'Help users compare limits, exports, and value moments when they already show intent to keep using the product.',
+          targetMetric: 'Increase subscription-start rate among activated users without increasing refund or complaint mentions.',
+          validationExperiment:
+            'Prototype a clearer plan comparison for activated users and monitor conversion plus pricing complaints.',
+          recommendationValue: 'Improve plan comparison for high-intent users',
+          metricValue: 'Activated-user plan conversion quality',
+          experimentValue: 'Plan comparison prototype'
+        },
+        explore: {
+          title: 'Test a lower-commitment trial path',
+          recommendation:
+            'Use a limited trial path to learn whether users need more proof of value before committing to a subscription.',
+          targetMetric: 'Improve trial-to-activation rate before the first subscription prompt.',
+          validationExperiment:
+            'A/B test a limited trial path against the current subscription entry for new users.',
+          recommendationValue: 'Test a lower-commitment trial path',
+          metricValue: 'Trial-to-activation behavior',
+          experimentValue: 'Limited trial A/B test'
+        }
+      },
+      zh: {
+        fix: {
+          title: '降低付费前价值解释不足导致的流失',
+          recommendation: '在触发收费/会员节点前补充权益、限制和试用价值说明，减少用户还没理解价值就流失。',
+          targetMetric: '降低每 100 条评论中的收费、会员价值或限制不清投诉数。',
+          validationExperiment: '在付费入口前 A/B 测试权益与限制说明，并比较付费退出率和收费相关差评变化。',
+          recommendationValue: '降低付费前价值解释不足导致的流失',
+          metricValue: '付费价值解释投诉率',
+          experimentValue: '付费前价值说明 A/B 测试'
+        },
+        improve: {
+          title: '优化高意向用户的套餐比较',
+          recommendation: '当用户已经表现出继续使用意图时，帮助他们理解限制、导出能力和套餐差异。',
+          targetMetric: '提升已激活用户的订阅开始率，同时不增加退款或收费投诉。',
+          validationExperiment: '为已激活用户原型化更清晰的套餐比较，并同时观察转化与收费投诉。',
+          recommendationValue: '优化高意向用户的套餐比较',
+          metricValue: '已激活用户套餐转化质量',
+          experimentValue: '套餐比较原型验证'
+        },
+        explore: {
+          title: '测试低承诺试用路径',
+          recommendation: '用有限试用路径验证用户是否需要更多价值证明后才愿意订阅。',
+          targetMetric: '提升首次订阅提示前的试用到激活转化率。',
+          validationExperiment: '对新用户 A/B 测试有限试用路径与当前订阅入口。',
+          recommendationValue: '测试低承诺试用路径',
+          metricValue: '试用到激活行为',
+          experimentValue: '有限试用 A/B 测试'
+        }
+      }
+    }
+  },
+  {
+    patterns: [
+      /draft/i,
+      /autosave/i,
+      /auto-save/i,
+      /lost work/i,
+      /export/i,
+      /sync/i,
+      /草稿/i,
+      /自动保存/i,
+      /导出/i,
+      /同步/i,
+      /丢失/i,
+      /恢复/i
+    ],
+    copy: {
+      en: {
+        fix: {
+          title: 'Fix draft recovery and export failure points',
+          recommendation:
+            'Prioritize autosave, draft recovery, sync, and export failure points so users do not lose work during important tasks.',
+          targetMetric: 'Reduce draft-loss, recovery, or export-failure complaints per 100 reviews.',
+          validationExperiment:
+            'Release autosave recovery and export-error handling to 25% of affected sessions, then compare lost-work mentions over two weeks.',
+          recommendationValue: 'Fix draft recovery and export failure points',
+          metricValue: 'Draft loss complaint rate',
+          experimentValue: 'Autosave/export recovery rollout'
+        },
+        improve: {
+          title: 'Strengthen reliable handoff for existing workflows',
+          recommendation:
+            'Improve export, sync, and saved-work handoff where users already try to move work into another tool.',
+          targetMetric: 'Increase successful draft, sync, or export completions per activated user.',
+          validationExperiment:
+            'Prototype one high-match export or recovery path and measure completion plus repeat use over seven days.',
+          recommendationValue: 'Strengthen reliable handoff for existing workflows',
+          metricValue: 'Successful draft handoff behavior',
+          experimentValue: 'Workflow handoff prototype'
+        },
+        explore: {
+          title: 'Test clearer recovery guidance for risky sessions',
+          recommendation:
+            'Use lightweight guidance when a session is long, offline, or export-heavy so users know their work is protected.',
+          targetMetric: 'Improve completion rate for long or export-heavy sessions.',
+          validationExperiment:
+            'A/B test recovery status messaging against the current long-session flow.',
+          recommendationValue: 'Test clearer recovery guidance for risky sessions',
+          metricValue: 'Long-session completion behavior',
+          experimentValue: 'Recovery-status A/B test'
+        }
+      },
+      zh: {
+        fix: {
+          title: '修复草稿恢复与导出失败点',
+          recommendation: '优先修复自动保存、草稿恢复、同步和导出失败点，避免用户在重要任务中失去成果。',
+          targetMetric: '降低每 100 条评论中的草稿丢失、恢复失败或导出失败投诉数。',
+          validationExperiment: '向 25% 受影响会话发布自动保存恢复和导出错误处理，并对比两周内丢稿相关反馈变化。',
+          recommendationValue: '修复草稿恢复与导出失败点',
+          metricValue: '草稿丢失投诉率',
+          experimentValue: '自动保存/导出恢复小流量验证'
+        },
+        improve: {
+          title: '强化现有工作流的可靠交付',
+          recommendation: '优化用户已经在使用的导出、同步和保存交接路径，让成果能稳定进入下游工具。',
+          targetMetric: '提升激活用户的人均草稿、同步或导出成功次数。',
+          validationExperiment: '原型化一个高匹配导出或恢复路径，并观察 7 天内完成率和复用变化。',
+          recommendationValue: '强化现有工作流的可靠交付',
+          metricValue: '草稿交付成功行为',
+          experimentValue: '工作流交付原型验证'
+        },
+        explore: {
+          title: '测试高风险会话的恢复提示',
+          recommendation: '在长会话、离线或高频导出场景中提供轻量提示，让用户知道成果已被保护。',
+          targetMetric: '提升长会话或高频导出会话的完成率。',
+          validationExperiment: '对恢复状态提示与当前长会话流程进行 A/B 测试。',
+          recommendationValue: '测试高风险会话的恢复提示',
+          metricValue: '长会话完成行为',
+          experimentValue: '恢复状态提示 A/B 测试'
+        }
+      }
+    }
+  },
+  {
+    patterns: [
+      /first screen/i,
+      /confusing start/i,
+      /which mode/i,
+      /template/i,
+      /guided/i,
+      /onboarding/i,
+      /first-session/i,
+      /首次/i,
+      /入口/i,
+      /引导/i,
+      /不知道/i,
+      /找不到/i,
+      /选择/i,
+      /模板/i,
+      /困惑/i
+    ],
+    copy: {
+      en: {
+        fix: {
+          title: 'Remove first-session decision blockers',
+          recommendation:
+            'Clarify the first screen, mode choice, and next action so new users are not blocked before reaching value.',
+          targetMetric: 'Reduce first-session confusion complaints per 100 reviews.',
+          validationExperiment:
+            'Ship a clearer entry path to a limited new-user cohort and compare first-action completion plus confusion mentions.',
+          recommendationValue: 'Remove first-session decision blockers',
+          metricValue: 'First-session confusion complaint rate',
+          experimentValue: 'New-user entry path rollout'
+        },
+        improve: {
+          title: 'Guide users to the right first workflow faster',
+          recommendation:
+            'Use the strongest existing use case to recommend the right mode or template with fewer choices.',
+          targetMetric: 'Increase first key-action completion for activated users.',
+          validationExperiment:
+            'Prototype a guided mode picker and compare completed first workflows within the same session.',
+          recommendationValue: 'Guide users to the right first workflow faster',
+          metricValue: 'First workflow completion behavior',
+          experimentValue: 'Guided mode-picker prototype'
+        },
+        explore: {
+          title: 'Test a clearer first-session path',
+          recommendation: 'Use a lightweight guided path that helps new users reach the first meaningful outcome faster.',
+          targetMetric: 'Improve first-session key-action completion rate.',
+          validationExperiment: 'A/B test a guided path against the current entry flow for new users.',
+          recommendationValue: 'Test a clearer first-session path',
+          metricValue: 'Activation behavior',
+          experimentValue: 'New-user guided-path A/B test'
+        }
+      },
+      zh: {
+        fix: {
+          title: '消除首次使用中的决策阻断',
+          recommendation: '澄清首屏、模式选择和下一步动作，避免新用户在到达价值前就被卡住。',
+          targetMetric: '降低每 100 条评论中的首次使用困惑投诉数。',
+          validationExperiment: '向小流量新用户发布更清晰的入口路径，并比较首个动作完成率和困惑反馈。',
+          recommendationValue: '消除首次使用中的决策阻断',
+          metricValue: '首次使用困惑投诉率',
+          experimentValue: '新用户入口路径小流量验证'
+        },
+        improve: {
+          title: '让用户更快进入正确的首个工作流',
+          recommendation: '基于最强的现有使用场景，用更少选择帮助用户进入合适模式或模板。',
+          targetMetric: '提升激活用户的首次关键动作完成率。',
+          validationExperiment: '原型化引导式模式选择器，并比较同会话内首个工作流完成情况。',
+          recommendationValue: '让用户更快进入正确的首个工作流',
+          metricValue: '首个工作流完成行为',
+          experimentValue: '引导式模式选择原型验证'
+        },
+        explore: {
+          title: '测试更清晰的首次使用路径',
+          recommendation: '用轻量引导帮助新用户更快到达第一个有意义的结果。',
+          targetMetric: '提升首次会话关键动作完成率。',
+          validationExperiment: '对新用户 A/B 测试引导路径与当前入口流程。',
+          recommendationValue: '测试更清晰的首次使用路径',
+          metricValue: '激活行为',
+          experimentValue: '新用户引导路径 A/B 测试'
+        }
+      }
+    }
+  },
+  {
+    patterns: [
+      /content/i,
+      /quality/i,
+      /suggestion/i,
+      /tone/i,
+      /voice/i,
+      /reading/i,
+      /lesson/i,
+      /output/i,
+      /内容/i,
+      /图片/i,
+      /绘本/i,
+      /阅读/i,
+      /词汇/i,
+      /听力/i,
+      /质量/i,
+      /语气/i,
+      /建议/i
+    ],
+    copy: {
+      en: {
+        fix: {
+          title: 'Improve content quality and output trust',
+          recommendation:
+            'Fix the content or output quality gaps that make users doubt whether the product can support the core job.',
+          targetMetric: 'Reduce content-quality or output-trust complaints per 100 reviews.',
+          validationExperiment:
+            'Patch the most cited quality gap for a subset of users and compare related low-star mentions over two weeks.',
+          recommendationValue: 'Improve content quality and output trust',
+          metricValue: 'Content quality complaint rate',
+          experimentValue: 'Quality-gap patch rollout'
+        },
+        improve: {
+          title: 'Double down on proven content value',
+          recommendation:
+            'Use the strongest praise around content quality, suggestions, or learning progress to deepen the value users already recognize.',
+          targetMetric: 'Increase repeat use around the praised content or output moment.',
+          validationExperiment:
+            'Prototype one improvement to the praised content moment and compare seven-day repeat behavior.',
+          recommendationValue: 'Double down on proven content value',
+          metricValue: 'Repeat content-value behavior',
+          experimentValue: 'Proven-value prototype'
+        },
+        explore: {
+          title: 'Test the next content quality signal',
+          recommendation:
+            'Run a small experiment around the next most repeated content or output signal before making a broad content investment.',
+          targetMetric: 'Improve completion or repeat behavior for the tested content moment.',
+          validationExperiment:
+            'A/B test one content-quality variation against the current experience for a focused segment.',
+          recommendationValue: 'Test the next content quality signal',
+          metricValue: 'Focused content experiment behavior',
+          experimentValue: 'Content-quality variation A/B test'
+        }
+      },
+      zh: {
+        fix: {
+          title: '提升内容质量与结果可信度',
+          recommendation: '修复让用户怀疑核心任务能否完成的内容或结果质量问题。',
+          targetMetric: '降低每 100 条评论中的内容质量或结果可信度投诉数。',
+          validationExperiment: '面向部分用户修补最常被提到的质量缺口，并比较两周内相关低星反馈变化。',
+          recommendationValue: '提升内容质量与结果可信度',
+          metricValue: '内容质量投诉率',
+          experimentValue: '质量缺口修复小流量验证'
+        },
+        improve: {
+          title: '放大已验证的内容价值',
+          recommendation: '基于内容质量、有效建议或学习进步的正向证据，深化用户已经认可的价值。',
+          targetMetric: '提升围绕正向内容价值时刻的重复使用。',
+          validationExperiment: '围绕被表扬的内容价值时刻原型化一个改进，并比较 7 天复用变化。',
+          recommendationValue: '放大已验证的内容价值',
+          metricValue: '内容价值复用行为',
+          experimentValue: '已验证价值原型验证'
+        },
+        explore: {
+          title: '测试下一个内容质量信号',
+          recommendation: '在大规模内容投入前，先围绕下一个高频内容或结果信号做小实验。',
+          targetMetric: '提升被测试内容时刻的完成或复用行为。',
+          validationExperiment: '针对聚焦人群 A/B 测试一个内容质量变化与当前体验。',
+          recommendationValue: '测试下一个内容质量信号',
+          metricValue: '聚焦内容实验行为',
+          experimentValue: '内容质量变化 A/B 测试'
+        }
+      }
+    }
+  }
+];
 
 const SCORE_FORMULA: Record<Language, string> = {
   en: 'frequency 22% + severity 28% + impact 25% + confidence 15% - effort 10%. Each factor is scored from 1 to 5, then normalized to 100.',
@@ -173,15 +597,15 @@ const DECISION_DIMENSION_COPY: Record<
       fix: (quote) => ({
         id: 'recommendationBasis',
         label: 'Recommendation basis',
-        value: 'Reliability before expansion',
-        rationale: `The recommendation prioritizes stability because users describe lost work or blocked export flows, including "${quote}".`,
+        value: 'Core journey before expansion',
+        rationale: `The recommendation prioritizes the core journey because users describe blocked or unreliable task completion, including "${quote}".`,
         evidence: [quote]
       }),
       improve: (quote) => ({
         id: 'recommendationBasis',
         label: 'Recommendation basis',
-        value: 'Workflow fit before breadth',
-        rationale: `The recommendation focuses on one export workflow because the evidence names a concrete downstream tool or publishing job, including "${quote}".`,
+        value: 'Proven value before breadth',
+        rationale: `The recommendation focuses on one validated use case because the evidence names a concrete value moment, including "${quote}".`,
         evidence: [quote]
       }),
       explore: (quote) => ({
@@ -258,15 +682,15 @@ const DECISION_DIMENSION_COPY: Record<
       fix: (quote) => ({
         id: 'recommendationBasis',
         label: '建议依据',
-        value: '先稳可靠性，再扩展能力',
-        rationale: `建议优先处理稳定性，因为证据中出现丢稿或导出受阻，例如“${quote}”。`,
+        value: '先稳核心路径，再扩展能力',
+        rationale: `建议优先处理核心路径，因为证据中出现任务受阻或体验不可靠，例如“${quote}”。`,
         evidence: [quote]
       }),
       improve: (quote) => ({
         id: 'recommendationBasis',
         label: '建议依据',
-        value: '先验证单一工作流匹配度',
-        rationale: `建议聚焦一个导出工作流，因为证据已经指向具体下游工具或发布任务，例如“${quote}”。`,
+        value: '先放大已验证价值',
+        rationale: `建议聚焦一个已验证使用场景，因为证据已经指向具体价值时刻，例如“${quote}”。`,
         evidence: [quote]
       }),
       explore: (quote) => ({
@@ -344,6 +768,41 @@ function findCluster(clusters: InsightCluster[], ids: string[]): InsightCluster 
   return ids.map((id) => clusters.find((cluster) => cluster.id === id)).find(Boolean) ?? clusters[0];
 }
 
+function describeOpportunity(
+  type: RoadmapType,
+  cluster: InsightCluster,
+  language: Language,
+  fallback: RoadmapCopy
+): OpportunityDetail {
+  const evidenceText = [
+    cluster.name,
+    cluster.description,
+    cluster.suspectedUserScenario,
+    ...cluster.representativeQuotes
+  ].join(' ');
+  const matchingTheme = OPPORTUNITY_THEMES.find((theme) =>
+    theme.patterns.some((pattern) => pattern.test(evidenceText))
+  );
+
+  if (!matchingTheme) {
+    return {
+      title: fallback.title,
+      recommendation: fallback.recommendation,
+      targetMetric: fallback.targetMetric,
+      validationExperiment: fallback.validationExperiment,
+      recommendationValue: fallback.title,
+      metricValue: language === 'zh' ? '与推荐对应的核心指标' : 'Recommendation-aligned metric',
+      experimentValue: language === 'zh' ? '与推荐对应的验证实验' : 'Recommendation-aligned experiment',
+      isSpecific: false
+    };
+  }
+
+  return {
+    ...matchingTheme.copy[language][type],
+    isSpecific: true
+  };
+}
+
 function score(cluster: InsightCluster, severity: number, impact: number, effort: number): RoadmapCard['scoringFactors'] {
   return {
     frequency: Math.min(5, Math.max(1, cluster.reviewCount)),
@@ -386,14 +845,40 @@ function createScoreDimensions(
   });
 }
 
-function createDecisionDimensions(type: RoadmapType, cluster: InsightCluster, language: Language) {
+function createDecisionDimensions(
+  type: RoadmapType,
+  cluster: InsightCluster,
+  language: Language,
+  opportunity: OpportunityDetail
+) {
   const quote = cluster.representativeQuotes[0] ?? (language === 'zh' ? '暂无代表性证据' : 'No representative quote');
   const copy = DECISION_DIMENSION_COPY[language];
+  const recommendationDimension = copy.recommendation[type](quote);
+  const metricDimension = copy.metric[type](cluster);
+  const experimentDimension = copy.experiment[type](cluster);
+
+  if (opportunity.isSpecific) {
+    recommendationDimension.value = opportunity.recommendationValue;
+    recommendationDimension.rationale =
+      language === 'zh'
+        ? `依据“${cluster.name}”中的具体证据主题“${opportunity.recommendationValue}”；代表性证据包括“${quote}”。`
+        : `Uses the concrete evidence theme "${opportunity.recommendationValue}" from ${cluster.name}; representative evidence includes "${quote}".`;
+    metricDimension.value = opportunity.metricValue;
+    metricDimension.rationale =
+      language === 'zh'
+        ? `指标直接追踪“${opportunity.recommendationValue}”是否改善，避免建议只停留在方向判断。`
+        : `The metric directly tracks whether "${opportunity.recommendationValue}" improves, so the recommendation has a measurable readout.`;
+    experimentDimension.value = opportunity.experimentValue;
+    experimentDimension.rationale =
+      language === 'zh'
+        ? `实验围绕“${opportunity.recommendationValue}”做小范围验证，先看相关证据是否下降或正向行为是否提升。`
+        : `The experiment validates "${opportunity.recommendationValue}" in a limited scope before broader roadmap investment.`;
+  }
 
   return {
-    recommendationDimensions: [copy.recommendation[type](quote)],
-    metricDimensions: [copy.metric[type](cluster)],
-    experimentDimensions: [copy.experiment[type](cluster)],
+    recommendationDimensions: [recommendationDimension],
+    metricDimensions: [metricDimension],
+    experimentDimensions: [experimentDimension],
     riskDimensions: [copy.risk[type](cluster)]
   };
 }
@@ -405,13 +890,14 @@ function createCardPayload(
   factors: RoadmapCard['scoringFactors']
 ): RoadmapCard {
   const copy = ROADMAP_COPY[language][type];
-  const decisionDimensions = createDecisionDimensions(type, cluster, language);
+  const opportunity = describeOpportunity(type, cluster, language, copy);
+  const decisionDimensions = createDecisionDimensions(type, cluster, language, opportunity);
 
   return {
     id: copy.id,
     type,
-    title: copy.title,
-    recommendation: copy.recommendation,
+    title: opportunity.title,
+    recommendation: opportunity.recommendation,
     priorityScore: priorityScore(factors),
     scoringFactors: factors,
     scoreFormula: SCORE_FORMULA[language],
@@ -420,8 +906,8 @@ function createCardPayload(
     evidenceQuotes: cluster.representativeQuotes,
     userScenario: cluster.suspectedUserScenario,
     supportingReviewCount: cluster.reviewCount,
-    targetMetric: copy.targetMetric,
-    validationExperiment: copy.validationExperiment,
+    targetMetric: opportunity.targetMetric,
+    validationExperiment: opportunity.validationExperiment,
     risks: copy.risks,
     confidence: cluster.confidence
   };

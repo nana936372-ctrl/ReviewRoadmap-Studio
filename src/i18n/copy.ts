@@ -150,10 +150,10 @@ export const appCopy = {
       }
     },
     input: {
-      eyebrow: 'Demo data source',
-      title: 'Analyze an App Store review sample',
+      eyebrow: 'Data source',
+      title: 'Analyze App Store reviews',
       description:
-        'This prototype uses a prepared review sample for a fictional AI writing app, shaped like public App Store feedback.',
+        'Paste a public App Store URL to analyze live Apple review RSS data, or keep the prepared sample for demo mode.',
       appStoreUrl: 'App Store URL',
       settingsLabel: 'Review analysis settings',
       category: 'Category',
@@ -165,15 +165,36 @@ export const appCopy = {
       },
       timeWindow: 'Time window',
       timeWindowOptions: {
-        may2026: 'May 2026 sample',
-        last30: 'Last 30 days',
-        last90: 'Last 90 days'
+        'may-2026': 'May 2026',
+        'last-30': 'Last 30 days',
+        'last-90': 'Last 90 days'
       },
       reviewSample: 'Review sample',
-      reviewSampleNote: 'Optional upload control; this demo uses prepared sample data.',
-      advancedSettings: 'Sample controls',
+      reviewSampleNote: 'Optional upload control; URL analysis uses Apple’s public customer-review RSS feed.',
+      advancedSettings: 'Data controls',
       analyze: 'Analyze Reviews',
-      summary: '18 review-shaped records - AI writing category - May 2026 sample'
+      analyzing: 'Analyzing...',
+      summary: 'Prepared sample: 18 review-shaped records - AI writing category - May 2026',
+      status: {
+        sampleTitle: 'Prepared demo sample',
+        loadingTitle: 'Fetching App Store reviews',
+        loadingDetail: 'Reading the public Apple customer-review feed...',
+        liveTitle: 'Live App Store reviews',
+        liveDetail: ({
+          fetchedCount,
+          filteredCount,
+          timeWindow
+        }: {
+          fetchedCount: number;
+          filteredCount: number;
+          timeWindow: string;
+        }) => `${fetchedCount} fetched, ${filteredCount} in ${timeWindow}`,
+        emptyTitle: 'No reviews in selected window',
+        emptyDetail: ({ fetchedCount, timeWindow }: { fetchedCount: number; timeWindow: string }) =>
+          `${fetchedCount} fetched, 0 in ${timeWindow}. Try a wider time window.`,
+        errorTitle: 'Live review fetch failed',
+        unknownError: 'Unknown fetch error.'
+      }
     },
     dashboard: {
       eyebrow: 'Evidence synthesis',
@@ -498,9 +519,9 @@ export const appCopy = {
       }
     },
     input: {
-      eyebrow: '演示数据源',
-      title: '分析 App Store 评论样本',
-      description: '这个原型使用一组为虚构 AI 写作应用准备的评论样本，结构接近公开 App Store 反馈。',
+      eyebrow: '数据源',
+      title: '分析 App Store 评论',
+      description: '粘贴公开 App Store 链接即可读取 Apple 评论 RSS；也可以保留内置样本用于演示。',
       appStoreUrl: 'App Store 链接',
       settingsLabel: '评论分析设置',
       category: '品类',
@@ -512,15 +533,36 @@ export const appCopy = {
       },
       timeWindow: '时间范围',
       timeWindowOptions: {
-        may2026: '2026 年 5 月样本',
-        last30: '最近 30 天',
-        last90: '最近 90 天'
+        'may-2026': '2026 年 5 月',
+        'last-30': '最近 30 天',
+        'last-90': '最近 90 天'
       },
       reviewSample: '评论样本',
-      reviewSampleNote: '可选上传入口；当前 demo 使用准备好的样例数据。',
-      advancedSettings: '样本控制',
+      reviewSampleNote: '可选上传入口；链接分析会使用 Apple 公开评论 RSS。',
+      advancedSettings: '数据控制',
       analyze: '分析评论',
-      summary: '18 条评论样本 - AI 写作品类 - 2026 年 5 月样本'
+      analyzing: '分析中...',
+      summary: '内置样本：18 条评论记录 - AI 写作品类 - 2026 年 5 月',
+      status: {
+        sampleTitle: '内置演示样本',
+        loadingTitle: '正在获取 App Store 评论',
+        loadingDetail: '正在读取 Apple 公开评论 RSS...',
+        liveTitle: '真实 App Store 评论',
+        liveDetail: ({
+          fetchedCount,
+          filteredCount,
+          timeWindow
+        }: {
+          fetchedCount: number;
+          filteredCount: number;
+          timeWindow: string;
+        }) => `已获取 ${fetchedCount} 条，${timeWindow} 内 ${filteredCount} 条`,
+        emptyTitle: '所选时间范围内暂无评论',
+        emptyDetail: ({ fetchedCount, timeWindow }: { fetchedCount: number; timeWindow: string }) =>
+          `已获取 ${fetchedCount} 条，但 ${timeWindow} 内为 0 条。可以切换到更宽的时间范围。`,
+        errorTitle: '真实评论获取失败',
+        unknownError: '未知抓取错误。'
+      }
     },
     dashboard: {
       eyebrow: '证据综合',

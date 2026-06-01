@@ -51,4 +51,35 @@ describe('classifyReview', () => {
     expect(signal.labels).toEqual(['delight']);
     expect(signal.sentiment).toBe('positive');
   });
+
+  it('labels Chinese live reviews with product signals', () => {
+    const bugSignal = classifyReview({
+      ...baseReview,
+      id: 'cn1',
+      rating: 2,
+      title: '不能打卡',
+      body: '按钮没有了，更新后不能打卡，客服也没有回复。',
+      normalizedText: '不能打卡 按钮没有了，更新后不能打卡，客服也没有回复。'
+    });
+    const pricingSignal = classifyReview({
+      ...baseReview,
+      id: 'cn2',
+      rating: 1,
+      title: '收费高',
+      body: '会员价格太贵，孩子刚开始用就遇到付费限制。',
+      normalizedText: '收费高 会员价格太贵，孩子刚开始用就遇到付费限制。'
+    });
+    const delightSignal = classifyReview({
+      ...baseReview,
+      id: 'cn3',
+      rating: 5,
+      title: '孩子听力有进步',
+      body: '坚持读了一段时间，听力和词汇明显有进步。',
+      normalizedText: '孩子听力有进步 坚持读了一段时间，听力和词汇明显有进步。'
+    });
+
+    expect(bugSignal.labels).toContain('bug');
+    expect(pricingSignal.labels).toContain('pricing_friction');
+    expect(delightSignal.labels).toEqual(['delight']);
+  });
 });

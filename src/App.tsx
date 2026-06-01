@@ -8,27 +8,133 @@ import { InputPanel } from './components/InputPanel';
 import { RoadmapCards } from './components/RoadmapCards';
 import { ScoreDetailPage } from './components/ScoreDetailPage';
 import { sampleReviews } from './data/sampleReviews';
-import type { Language } from './domain/types';
+import type { Language, RawReview, TimeWindow } from './domain/types';
 import { appCopy, languageOptions } from './i18n/copy';
 import { analyzeReviews } from './lib/analysis/pipeline';
+import { fetchAppStoreReviews } from './lib/appStoreReviews';
 
 const DEMO_APP_URL = 'https://apps.apple.com/app/draftly-ai-writing/id0000000000';
+const DEMO_GENERATED_AT = '2026-05-28T08:00:00.000Z';
+
+type AnalysisSourceStatus =
+  | { kind: 'sample' }
+  | { kind: 'loading' }
+  | { kind: 'live'; fetchedCount: number; filteredCount: number; timeWindow: TimeWindow }
+  | { kind: 'empty'; fetchedCount: number; timeWindow: TimeWindow }
+  | { kind: 'error'; message: string };
+
+function isDemoUrl(appUrl: string): boolean {
+  return appUrl.trim() === DEMO_APP_URL || /id0{6,}/.test(appUrl);
+}
 
 export default function App() {
   const [appUrl, setAppUrl] = useState(DEMO_APP_URL);
-  const [analysisRunCount, setAnalysisRunCount] = useState(1);
+  const [timeWindow, setTimeWindow] = useState<TimeWindow>('may-2026');
+  const [rawReviews, setRawReviews] = useState<RawReview[]>(sampleReviews);
+  const [generatedAt, setGeneratedAt] = useState(DEMO_GENERATED_AT);
+  const [sourceStatus, setSourceStatus] = useState<AnalysisSourceStatus>({ kind: 'sample' });
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [language, setLanguage] = useState<Language>('en');
   const [selectedRoadmapCardId, setSelectedRoadmapCardId] = useState<string | null>(null);
   const [showCalculationGuide, setShowCalculationGuide] = useState(false);
   const copy = appCopy[language];
   const analysis = useMemo(
-    () => analyzeReviews(sampleReviews, '2026-05-28T08:00:00.000Z', language),
-    [analysisRunCount, language]
+    () => analyzeReviews(rawReviews, generatedAt, language),
+    [generatedAt, language, rawReviews]
   );
+  const timeWindowLabel = copy.input.timeWindowOptions[timeWindow];
+  const inputStatus = useMemo(() => {
+    if (sourceStatus.kind === 'loading') {
+      return {
+        tone: 'neutral' as const,
+        title: copy.input.status.loadingTitle,
+        detail: copy.input.status.loadingDetail
+      };
+    }
+
+    if (sourceStatus.kind === 'live') {
+      return {
+        tone: 'success' as const,
+        title: copy.input.status.liveTitle,
+        detail: copy.input.status.liveDetail({
+          fetchedCount: sourceStatus.fetchedCount,
+          filteredCount: sourceStatus.filteredCount,
+          timeWindow: copy.input.timeWindowOptions[sourceStatus.timeWindow]
+        })
+      };
+    }
+
+    if (sourceStatus.kind === 'empty') {
+      return {
+        tone: 'warning' as const,
+        title: copy.input.status.emptyTitle,
+        detail: copy.input.status.emptyDetail({
+          fetchedCount: sourceStatus.fetchedCount,
+          timeWindow: copy.input.timeWindowOptions[sourceStatus.timeWindow]
+        })
+      };
+    }
+
+    if (sourceStatus.kind === 'error') {
+      return {
+        tone: 'error' as const,
+        title: copy.input.status.errorTitle,
+        detail: sourceStatus.message
+      };
+    }
+
+    return {
+      tone: 'neutral' as const,
+      title: copy.input.status.sampleTitle,
+      detail: copy.input.summary
+    };
+  }, [copy.input, sourceStatus]);
   const selectedRoadmapCard = selectedRoadmapCardId
     ? analysis.roadmapCards.find((card) => card.id === selectedRoadmapCardId)
     : undefined;
   const topRoadmapCard = analysis.roadmapCards[0];
+
+  async function handleAnalyze() {
+    setSelectedRoadmapCardId(null);
+    setShowCalculationGuide(false);
+
+    if (isDemoUrl(appUrl)) {
+      setRawReviews(sampleReviews);
+      setGeneratedAt(DEMO_GENERATED_AT);
+      setSourceStatus({ kind: 'sample' });
+      return;
+    }
+
+    setIsAnalyzing(true);
+    setSourceStatus({ kind: 'loading' });
+
+    try {
+      const result = await fetchAppStoreReviews(appUrl, timeWindow);
+      setRawReviews(result.reviews);
+      setGeneratedAt(new Date().toISOString());
+      setSourceStatus(
+        result.reviews.length > 0
+          ? {
+              kind: 'live',
+              fetchedCount: result.fetchedReviews.length,
+              filteredCount: result.reviews.length,
+              timeWindow
+            }
+          : {
+              kind: 'empty',
+              fetchedCount: result.fetchedReviews.length,
+              timeWindow
+            }
+      );
+    } catch (error) {
+      setSourceStatus({
+        kind: 'error',
+        message: error instanceof Error ? error.message : copy.input.status.unknownError
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  }
 
   useEffect(() => {
     if (!selectedRoadmapCardId) {
@@ -51,7 +157,7 @@ export default function App() {
   }, [showCalculationGuide]);
 
   return (
-    <main className="app-shell">
+    <main className="app-shell" lang={language}>
       <section className="hero-band">
         <button
           aria-label={copy.methodology.open}
@@ -118,12 +224,13 @@ export default function App() {
           <InputPanel
             appUrl={appUrl}
             copy={copy.input}
+            isAnalyzing={isAnalyzing}
             onAppUrlChange={setAppUrl}
-            onAnalyze={() => {
-              setSelectedRoadmapCardId(null);
-              setShowCalculationGuide(false);
-              setAnalysisRunCount((count) => count + 1);
-            }}
+            onAnalyze={handleAnalyze}
+            onTimeWindowChange={setTimeWindow}
+            status={inputStatus}
+            timeWindow={timeWindow}
+            timeWindowLabel={timeWindowLabel}
           />
           <InsightDashboard analysis={analysis} copy={copy.dashboard} />
           <RoadmapCards

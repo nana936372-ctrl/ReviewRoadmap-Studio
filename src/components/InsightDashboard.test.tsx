@@ -12,7 +12,7 @@ describe('InsightDashboard', () => {
     renderApp(<InsightDashboard analysis={analysis} copy={appCopy.en.dashboard} />);
 
     expect(screen.getByRole('heading', { name: /Review intelligence/i })).toBeInTheDocument();
-    expect(screen.getAllByText(/Reliability and data-loss issues/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/Reliability and core-task failures/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText(/Crashes during long drafts/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Signal map/i)).toBeInTheDocument();
     expect(screen.getAllByLabelText(/Sentiment balance/i).length).toBeGreaterThan(0);

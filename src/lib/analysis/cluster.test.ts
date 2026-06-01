@@ -47,7 +47,7 @@ describe('buildInsightClusters', () => {
 
     expect(clusters.map((cluster) => cluster.id)).toEqual(['bug', 'delight']);
     expect(clusters[0]).toMatchObject({
-      name: 'Reliability and data-loss issues',
+      name: 'Reliability and core-task failures',
       reviewCount: 1,
       averageRating: 1,
       confidence: 0.72
@@ -59,9 +59,9 @@ describe('buildInsightClusters', () => {
     const clusters = buildInsightClusters(reviews, signals, 'zh');
 
     expect(clusters[0]).toMatchObject({
-      name: '可靠性与数据丢失问题',
-      description: '用户反馈崩溃、导出失败、同步异常或作品丢失，这些问题会直接损害信任。',
-      suspectedUserScenario: '正在赶重要写作任务、对可靠性要求很高的用户。'
+      name: '可靠性与核心任务问题',
+      description: '用户反馈核心操作失败、异常、卡顿或结果不可信，这些问题会直接损害信任。',
+      suspectedUserScenario: '正在完成关键任务、对稳定性要求较高的用户。'
     });
   });
 });

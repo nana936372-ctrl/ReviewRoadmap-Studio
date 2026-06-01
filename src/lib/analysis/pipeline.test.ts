@@ -28,7 +28,7 @@ describe('analyzeReviews', () => {
   it('returns localized cluster and roadmap copy for Chinese analysis', () => {
     const result = analyzeReviews(sampleReviews, '2026-05-28T08:00:00.000Z', 'zh');
 
-    expect(result.clusters.some((cluster) => cluster.name === '可靠性与数据丢失问题')).toBe(true);
-    expect(result.roadmapCards[0].title).toBe('稳定草稿保存与导出可靠性');
+    expect(result.clusters.some((cluster) => cluster.name === '可靠性与核心任务问题')).toBe(true);
+    expect(result.roadmapCards[0].title).toBe('修复草稿恢复与导出失败点');
   });
 });

@@ -4,23 +4,23 @@ import { confidenceScoreForReviewCount } from './scoring';
 const CLUSTER_COPY: Record<Language, Record<SignalLabel, { name: string; description: string; scenario: string }>> = {
   en: {
     bug: {
-      name: 'Reliability and data-loss issues',
-      description: 'Users report crashes, failed exports, sync problems, or lost work that can damage trust.',
-      scenario: 'Users trying to finish important writing work under time pressure.'
+      name: 'Reliability and core-task failures',
+      description: 'Users report core task failures, errors, instability, or outcomes that can damage trust.',
+      scenario: 'Users trying to complete an important task with high reliability expectations.'
     },
     feature_request: {
-      name: 'Workflow extension requests',
-      description: 'Users ask for exports, planning views, reusable settings, or collaboration features.',
-      scenario: 'Users who want the app to fit into an existing content workflow.'
+      name: 'Feature and workflow requests',
+      description: 'Users ask for clearer capabilities, workflow support, or improvements to an existing use case.',
+      scenario: 'Users who already see value and want the product to fit their routine.'
     },
     onboarding_friction: {
-      name: 'First-session confusion',
-      description: 'Users struggle to choose the right mode, template, or next step during early usage.',
+      name: 'First-session and navigation confusion',
+      description: 'Users struggle to find the right path, understand the next step, or complete early setup.',
       scenario: 'New users evaluating whether the product is worth keeping.'
     },
     pricing_friction: {
-      name: 'Pricing and paywall uncertainty',
-      description: 'Users hit paid moments before understanding the value, limits, or export capabilities.',
+      name: 'Pricing and value uncertainty',
+      description: 'Users hit paid moments before they understand value, limits, or what is included.',
       scenario: 'Trial users deciding whether the app is worth a subscription.'
     },
     retention_risk: {
@@ -29,30 +29,30 @@ const CLUSTER_COPY: Record<Language, Record<SignalLabel, { name: string; descrip
       scenario: 'Users who were initially interested but did not reach repeat value.'
     },
     delight: {
-      name: 'Differentiated writing experience',
-      description: 'Users praise tone controls, clean interface, useful suggestions, and saved time.',
-      scenario: 'Satisfied users who understand the product value and can reveal what to protect.'
+      name: 'Validated product value',
+      description: 'Users describe concrete moments where the product works well, saves time, or creates progress.',
+      scenario: 'Satisfied users who can reveal the value the roadmap should protect.'
     }
   },
   zh: {
     bug: {
-      name: '可靠性与数据丢失问题',
-      description: '用户反馈崩溃、导出失败、同步异常或作品丢失，这些问题会直接损害信任。',
-      scenario: '正在赶重要写作任务、对可靠性要求很高的用户。'
+      name: '可靠性与核心任务问题',
+      description: '用户反馈核心操作失败、异常、卡顿或结果不可信，这些问题会直接损害信任。',
+      scenario: '正在完成关键任务、对稳定性要求较高的用户。'
     },
     feature_request: {
-      name: '工作流扩展需求',
-      description: '用户希望增加导出、规划视图、可复用设置或协作能力。',
-      scenario: '希望产品接入现有内容生产流程的用户。'
+      name: '功能与使用场景需求',
+      description: '用户希望产品补齐明确能力、支持现有流程，或改善已经在使用的场景。',
+      scenario: '已经看到价值、希望产品更好融入日常使用的用户。'
     },
     onboarding_friction: {
-      name: '首次使用困惑',
-      description: '用户在早期使用时难以选择合适模式、模板或下一步操作。',
+      name: '首次使用与路径困惑',
+      description: '用户在早期使用时难以找到正确路径、理解下一步或完成初始设置。',
       scenario: '正在判断这个产品是否值得留下的新用户。'
     },
     pricing_friction: {
-      name: '价格与付费墙不确定性',
-      description: '用户在理解价值、限制或导出能力之前就遇到付费节点。',
+      name: '价格与价值感不确定性',
+      description: '用户在理解产品价值、限制或权益之前就遇到付费节点。',
       scenario: '正在判断订阅是否值得的试用用户。'
     },
     retention_risk: {
@@ -61,9 +61,9 @@ const CLUSTER_COPY: Record<Language, Record<SignalLabel, { name: string; descrip
       scenario: '曾经感兴趣但没有到达复用价值的用户。'
     },
     delight: {
-      name: '差异化写作体验',
-      description: '用户认可语气控制、干净界面、有效建议和节省时间。',
-      scenario: '已经理解产品价值、能帮助团队判断该保护什么的满意用户。'
+      name: '已验证的产品价值',
+      description: '用户描述产品确实有效、节省时间或带来进步的具体时刻。',
+      scenario: '已经获得价值、能帮助团队判断应该保护什么的满意用户。'
     }
   }
 };
