@@ -1,5 +1,5 @@
 import type { Language, RawReview } from '../domain/types';
-import { SEMANTIC_ANALYSIS_SCHEMA } from '../lib/analysis/semantic';
+import { SEMANTIC_ANALYSIS_SCHEMA } from '../lib/analysis/semantic.js';
 
 const DEFAULT_OPENAI_MODEL = 'gpt-4.1-mini';
 const DEFAULT_DEEPSEEK_MODEL = 'deepseek-chat';

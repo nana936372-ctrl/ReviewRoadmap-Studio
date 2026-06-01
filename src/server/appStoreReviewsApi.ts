@@ -1,4 +1,4 @@
-import { parseAppStorePageReviews } from '../lib/appStorePageReviews';
+import { parseAppStorePageReviews } from '../lib/appStorePageReviews.js';
 
 export class AppStorePageApiError extends Error {
   constructor(

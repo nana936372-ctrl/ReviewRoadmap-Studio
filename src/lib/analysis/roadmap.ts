@@ -1,5 +1,5 @@
 import type { EvaluationDimension, InsightCluster, Language, RoadmapCard, RoadmapType } from '../../domain/types';
-import { PRIORITY_SCORE_WEIGHTS } from './scoring';
+import { PRIORITY_SCORE_WEIGHTS } from './scoring.js';
 
 const TYPE_ORDER: RoadmapType[] = ['fix', 'improve', 'explore'];
 const SCORE_WEIGHTS = PRIORITY_SCORE_WEIGHTS;

@@ -10,10 +10,10 @@ import type {
   SignalLabel,
   Urgency
 } from '../../domain/types';
-import { classifyReview } from './classify';
-import { normalizeReviews } from './normalize';
-import { generateRoadmapCardsFromSemanticDecisions, type SemanticRoadmapDecision } from './roadmap';
-import { confidenceScoreForReviewCount } from './scoring';
+import { classifyReview } from './classify.js';
+import { normalizeReviews } from './normalize.js';
+import { generateRoadmapCardsFromSemanticDecisions, type SemanticRoadmapDecision } from './roadmap.js';
+import { confidenceScoreForReviewCount } from './scoring.js';
 
 export interface SemanticReviewSignalDraft {
   reviewId: string;

@@ -1,5 +1,5 @@
-import { createSemanticAnalysisPayload, SemanticAnalysisApiError } from '../src/server/semanticAnalysisApi';
-import { sendJson } from '../src/server/http';
+import { createSemanticAnalysisPayload, SemanticAnalysisApiError } from '../src/server/semanticAnalysisApi.js';
+import { sendJson } from '../src/server/http.js';
 
 declare const process: { env: Record<string, string | undefined> };
 

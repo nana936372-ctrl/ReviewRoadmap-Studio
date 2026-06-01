@@ -1,5 +1,5 @@
-import { fetchAppStorePageReviewPayload, AppStorePageApiError } from '../src/server/appStoreReviewsApi';
-import { queryValue, sendJson } from '../src/server/http';
+import { fetchAppStorePageReviewPayload, AppStorePageApiError } from '../src/server/appStoreReviewsApi.js';
+import { queryValue, sendJson } from '../src/server/http.js';
 
 export default async function handler(request: any, response: any) {
   const appUrl =
