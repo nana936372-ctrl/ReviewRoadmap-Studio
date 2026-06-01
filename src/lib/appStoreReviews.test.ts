@@ -1,5 +1,6 @@
 import {
   buildCustomerReviewsUrl,
+  fetchAppStoreReviews,
   filterReviewsByTimeWindow,
   parseAppStoreUrl,
   parseCustomerReviewFeed
@@ -43,7 +44,10 @@ describe('parseAppStoreUrl', () => {
 
   it('builds the public customer-review RSS URL', () => {
     expect(buildCustomerReviewsUrl({ appId: '1338646799', country: 'cn' })).toBe(
-      'https://itunes.apple.com/rss/customerreviews/id=1338646799/sortBy=mostRecent/json?cc=cn'
+      'https://itunes.apple.com/cn/rss/customerreviews/page=1/id=1338646799/sortBy=mostRecent/json'
+    );
+    expect(buildCustomerReviewsUrl({ appId: '1338646799', country: 'cn' }, 3)).toBe(
+      'https://itunes.apple.com/cn/rss/customerreviews/page=3/id=1338646799/sortBy=mostRecent/json'
     );
   });
 });
@@ -75,7 +79,114 @@ describe('parseCustomerReviewFeed', () => {
   it('filters reviews to the selected time window', () => {
     const reviews = parseCustomerReviewFeed(feed);
 
+    expect(filterReviewsByTimeWindow(reviews, 'all', new Date('2026-06-01T00:00:00.000Z'))).toHaveLength(2);
     expect(filterReviewsByTimeWindow(reviews, 'may-2026', new Date('2026-06-01T00:00:00.000Z'))).toHaveLength(1);
     expect(filterReviewsByTimeWindow(reviews, 'last-90', new Date('2026-06-01T00:00:00.000Z'))).toHaveLength(2);
+  });
+});
+
+describe('fetchAppStoreReviews', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('uses the local App Store page proxy when embedded page reviews are available', async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        feedUrl: 'https://apps.apple.com/cn/app/example/id1338646799',
+        reviews: parseCustomerReviewFeed(feed)
+      })
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await fetchAppStoreReviews(
+      'https://apps.apple.com/cn/app/example/id1338646799',
+      'all',
+      new Date('2026-06-01T00:00:00.000Z')
+    );
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/app-store-reviews?appUrl=https%3A%2F%2Fapps.apple.com%2Fcn%2Fapp%2Fexample%2Fid1338646799',
+      expect.anything()
+    );
+    expect(result.sourceKind).toBe('app-store-page');
+    expect(result.fetchedReviews).toHaveLength(2);
+    expect(result.reviews).toHaveLength(2);
+    expect(result.fetchedPageCount).toBe(1);
+    expect(result.maxPages).toBe(1);
+  });
+
+  it('fetches paginated Apple RSS review pages and filters the analyzed time window', async () => {
+    const mayEntries = Array.from({ length: 50 }, (_, index) => ({
+      id: { label: `may-${index}` },
+      updated: { label: `2026-05-${String((index % 28) + 1).padStart(2, '0')}T04:00:00-07:00` },
+      'im:rating': { label: '2' },
+      'im:version': { label: '7.5.61' },
+      title: { label: `May issue ${index}` },
+      content: { label: 'May review body' }
+    }));
+    const olderEntries = [
+      {
+        id: { label: 'older-1' },
+        updated: { label: '2026-04-02T04:00:00-07:00' },
+        'im:rating': { label: '5' },
+        'im:version': { label: '7.5.60' },
+        title: { label: 'Older praise' },
+        content: { label: 'Older review body' }
+      },
+      {
+        id: { label: 'older-2' },
+        updated: { label: '2026-03-15T04:00:00-07:00' },
+        'im:rating': { label: '1' },
+        'im:version': { label: '7.5.59' },
+        title: { label: 'Older complaint' },
+        content: { label: 'Older complaint body' }
+      }
+    ];
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+        json: async () => ({})
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ feed: { entry: mayEntries } })
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ feed: { entry: olderEntries } })
+      });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await fetchAppStoreReviews(
+      'https://apps.apple.com/cn/app/example/id1338646799',
+      'may-2026',
+      new Date('2026-06-01T00:00:00.000Z')
+    );
+
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      '/api/app-store-reviews?appUrl=https%3A%2F%2Fapps.apple.com%2Fcn%2Fapp%2Fexample%2Fid1338646799',
+      expect.anything()
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
+      'https://itunes.apple.com/cn/rss/customerreviews/page=1/id=1338646799/sortBy=mostRecent/json',
+      expect.anything()
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      3,
+      'https://itunes.apple.com/cn/rss/customerreviews/page=2/id=1338646799/sortBy=mostRecent/json',
+      expect.anything()
+    );
+    expect(result.sourceKind).toBe('apple-rss');
+    expect(result.fetchedReviews).toHaveLength(52);
+    expect(result.reviews).toHaveLength(50);
+    expect(result.fetchedPageCount).toBe(2);
   });
 });

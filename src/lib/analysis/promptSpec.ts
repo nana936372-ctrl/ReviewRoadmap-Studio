@@ -10,19 +10,19 @@ const workflowStages = {
       dimensions: ['Completeness', 'Quote preservation', 'Deduplication']
     },
     {
-      name: 'Classify signals',
+      name: 'LLM semantic signal reading',
       description:
-        'Assign product labels such as bug, feature request, onboarding friction, pricing friction, retention risk, and delight.',
+        'Use the LLM to interpret each review in its app context, then assign evidence-bound labels such as bug, request, friction, risk, or delight.',
       evaluationMethod:
-        'Compare review language against product signal definitions, then keep sentiment and urgency separate from the label itself.',
-      dimensions: ['Signal label fit', 'Sentiment', 'Urgency']
+        'Require every label to be supported by the review text and keep sentiment and urgency separate from the semantic label itself.',
+      dimensions: ['Semantic fit', 'Evidence boundary', 'Sentiment', 'Urgency']
     },
     {
-      name: 'Cluster insights',
-      description: 'Group related signal labels into product-language insight clusters with representative evidence.',
+      name: 'LLM insight clustering',
+      description: 'Group reviews by shared user meaning, product surface, and consequence instead of reusing a fixed keyword template.',
       evaluationMethod:
-        'Group repeated labels only when the reviews share a user scenario, product surface, or consequence that can support a roadmap choice.',
-      dimensions: ['Shared user scenario', 'Evidence strength', 'Cluster confidence']
+        'Accept a cluster only when it cites concrete review IDs and the cited reviews share a scenario or consequence that can support a roadmap choice.',
+      dimensions: ['Shared user scenario', 'Cited review IDs', 'Evidence strength', 'Cluster confidence']
     },
     {
       name: 'Score opportunities',
@@ -32,11 +32,12 @@ const workflowStages = {
       dimensions: ['Frequency', 'Severity', 'Business impact', 'Confidence', 'Effort']
     },
     {
-      name: 'Generate roadmap cards',
-      description: 'Convert top opportunities into Fix, Improve, and Explore recommendations with metrics and validation experiments.',
+      name: 'LLM roadmap synthesis',
+      description:
+        'Convert semantic clusters into Fix, Improve, and Explore recommendations with metrics and validation experiments, while keeping numbers deterministic.',
       evaluationMethod:
-        'Check every recommendation against evidence, metric fit, validation quality, and risk control before presenting it as a roadmap option.',
-      dimensions: ['Recommendation basis', 'Metric fit', 'Experiment quality', 'Risk control']
+        'Check every recommendation against cited evidence, metric fit, validation quality, and risk control before presenting it as a roadmap option.',
+      dimensions: ['Cited evidence', 'Recommendation basis', 'Metric fit', 'Experiment quality', 'Risk control']
     }
   ],
   zh: [
@@ -47,16 +48,16 @@ const workflowStages = {
       dimensions: ['完整性', '引用保真', '去重']
     },
     {
-      name: '分类用户信号',
-      description: '将评论标记为缺陷、功能请求、新手阻力、价格阻力、留存风险和喜爱点等产品信号。',
-      evaluationMethod: '把评论语言与产品信号定义对齐，同时把情绪倾向和紧急度从标签判断中拆出来。',
-      dimensions: ['信号匹配', '情绪倾向', '紧急度']
+      name: 'LLM 语义读取用户信号',
+      description: '让 LLM 结合具体 App 语境理解每条评论，再标记缺陷、需求、阻力、风险或喜爱点。',
+      evaluationMethod: '每个标签都必须被评论原文支持，同时把情绪倾向和紧急度从语义标签中拆出来。',
+      dimensions: ['语义匹配', '证据边界', '情绪倾向', '紧急度']
     },
     {
-      name: '聚类产品洞察',
-      description: '把相关信号聚合成产品语言下的洞察组，并绑定代表性证据。',
-      evaluationMethod: '只有当评论共享用户场景、产品触点或后果时才聚合，避免把表面相似的评论混在一起。',
-      dimensions: ['共同场景', '证据强度', '聚类置信度']
+      name: 'LLM 聚类产品洞察',
+      description: '按共同用户含义、产品触点和后果聚类，而不是复用固定关键词模板。',
+      evaluationMethod: '只有当聚类绑定具体评论 ID，且这些评论共享场景或后果时，才把它作为路线图证据。',
+      dimensions: ['共同场景', '引用评论 ID', '证据强度', '聚类置信度']
     },
     {
       name: '评估机会优先级',
@@ -65,10 +66,10 @@ const workflowStages = {
       dimensions: ['频次', '严重度', '业务影响', '置信度', '成本']
     },
     {
-      name: '生成路线图卡片',
-      description: '把高价值机会转化为 Fix、Improve、Explore 建议，并附上指标和验证实验。',
-      evaluationMethod: '每条建议在展示前都要检查证据依据、指标匹配、实验质量和风险控制。',
-      dimensions: ['建议依据', '指标匹配', '实验质量', '风险控制']
+      name: 'LLM 生成路线图卡片',
+      description: '把语义聚类转化为 Fix、Improve、Explore 建议，并附上指标和验证实验；数值仍由公式计算。',
+      evaluationMethod: '每条建议在展示前都要检查引用证据、建议依据、指标匹配、实验质量和风险控制。',
+      dimensions: ['引用证据', '建议依据', '指标匹配', '实验质量', '风险控制']
     }
   ]
 } as const;

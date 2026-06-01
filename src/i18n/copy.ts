@@ -1,4 +1,4 @@
-import type { Language, RoadmapCard, Sentiment, SignalLabel, Urgency } from '../domain/types';
+import type { Language, RawReview, RoadmapCard, Sentiment, SignalLabel, Urgency } from '../domain/types';
 import type { ConfidenceBaseFactors } from '../lib/analysis/scoring';
 
 function englishConfidenceBaseBreakdown(baseFactors: ConfidenceBaseFactors, basePercent: number): string {
@@ -25,6 +25,26 @@ export const appCopy = {
       reviewsAnalyzed: (count: number) => `${count} reviews analyzed`,
       insightClusters: (count: number) => `${count} insight clusters`,
       roadmapCards: (count: number) => `${count} roadmap cards`
+    },
+    reviewsPage: {
+      open: 'View all reviews',
+      eyebrow: 'Review records',
+      title: 'All fetched reviews',
+      description:
+        'A complete readout of every review record currently loaded from the prepared sample or the public App Store feed.',
+      back: 'Back to overview',
+      summaryLabel: 'Fetched review summary',
+      fetchedCount: (count: number) => `${count} fetched reviews`,
+      analyzedCount: (count: number) => `${count} used in analysis`,
+      empty: 'No fetched reviews to show yet.',
+      rating: (rating: number) => `${rating}/5`,
+      version: 'Version',
+      source: 'Source',
+      untitled: 'Untitled review',
+      sourceValues: {
+        'app-store-sample': 'app-store-sample',
+        'app-store-live': 'app-store-live'
+      } satisfies Record<RawReview['source'], string>
     },
     methodology: {
       open: 'Open calculation guide',
@@ -165,6 +185,7 @@ export const appCopy = {
       },
       timeWindow: 'Time window',
       timeWindowOptions: {
+        all: 'All fetched reviews',
         'may-2026': 'May 2026',
         'last-30': 'Last 30 days',
         'last-90': 'Last 90 days'
@@ -174,24 +195,43 @@ export const appCopy = {
       advancedSettings: 'Data controls',
       analyze: 'Analyze Reviews',
       analyzing: 'Analyzing...',
-      summary: 'Prepared sample: 18 review-shaped records - AI writing category - May 2026',
+      summary: 'Prepared sample: 18 review-shaped records - AI writing category',
       status: {
         sampleTitle: 'Prepared demo sample',
         loadingTitle: 'Fetching App Store reviews',
         loadingDetail: 'Reading the public Apple customer-review feed...',
+        sources: {
+          appStorePage: 'App Store page data',
+          appleRss: ({
+            fetchedPageCount,
+            maxPages
+          }: {
+            fetchedPageCount: number;
+            maxPages: number;
+          }) => `Apple RSS (${fetchedPageCount}/${maxPages} pages)`
+        },
         liveTitle: 'Live App Store reviews',
         liveDetail: ({
           fetchedCount,
           filteredCount,
+          sourceName,
           timeWindow
         }: {
           fetchedCount: number;
           filteredCount: number;
+          sourceName: string;
           timeWindow: string;
-        }) => `${fetchedCount} fetched, ${filteredCount} in ${timeWindow}`,
+        }) => `${fetchedCount} fetched from ${sourceName}; ${filteredCount} matched ${timeWindow} and are used for analysis.`,
         emptyTitle: 'No reviews in selected window',
-        emptyDetail: ({ fetchedCount, timeWindow }: { fetchedCount: number; timeWindow: string }) =>
-          `${fetchedCount} fetched, 0 in ${timeWindow}. Try a wider time window.`,
+        emptyDetail: ({
+          fetchedCount,
+          sourceName,
+          timeWindow
+        }: {
+          fetchedCount: number;
+          sourceName: string;
+          timeWindow: string;
+        }) => `${fetchedCount} fetched from ${sourceName}, but 0 matched ${timeWindow}. Try All fetched reviews or a wider window.`,
         errorTitle: 'Live review fetch failed',
         unknownError: 'Unknown fetch error.'
       }
@@ -199,7 +239,8 @@ export const appCopy = {
     dashboard: {
       eyebrow: 'Evidence synthesis',
       title: 'Review intelligence',
-      description: 'A structured readout of recurring user signals before the product makes roadmap recommendations.',
+      description:
+        'A structured readout of recurring user signals from the reviews currently included in the selected analysis window.',
       noRating: 'No rating yet',
       averageRating: (rating: string) => `${rating} avg rating`,
       noEvidence: 'No review evidence available yet.',
@@ -289,7 +330,8 @@ export const appCopy = {
     roadmap: {
       eyebrow: 'Decision output',
       title: 'Roadmap decisions',
-      description: 'Each recommendation preserves evidence, scoring logic, and the next validation step.',
+      description:
+        'Each recommendation is generated from the current analysis-window clusters, with evidence, scoring logic, and the next validation step preserved.',
       empty: 'No roadmap decisions yet. Add review evidence to generate recommendations.',
       typeLabels: {
         fix: 'Fix',
@@ -377,14 +419,46 @@ export const appCopy = {
       riskAndTradeoff: 'Risk and tradeoff',
       evaluationDimensions: 'Evaluation dimensions',
       nextSteps: 'Next steps',
-      contextBody:
-        'This brief turns review-shaped public feedback into a product decision for a fictional AI writing app.',
-      whyNowBody:
-        'The top opportunity combines repeated evidence, high severity, and a direct trust or retention consequence.',
-      nextStepItems: [
-        'Confirm the top evidence theme with support or interview notes.',
-        'Ship the smallest validated intervention for the selected segment.',
-        'Review the success metric after the experiment window closes.'
+      contextBody: ({
+        clusterCount,
+        decisionTitle,
+        reviewCount,
+        signalName
+      }: {
+        clusterCount: number;
+        decisionTitle: string;
+        reviewCount: number;
+        signalName: string;
+      }) =>
+        `This brief is generated from ${reviewCount} analyzed reviews and ${clusterCount} insight clusters. It focuses on "${decisionTitle}" because the top roadmap opportunity is supported by "${signalName}".`,
+      whyNowBody: ({
+        businessImpact,
+        confidencePercent,
+        priorityScore,
+        severity,
+        signalName,
+        supportingReviewCount
+      }: {
+        businessImpact: number;
+        confidencePercent: number;
+        priorityScore: number;
+        severity: number;
+        signalName: string;
+        supportingReviewCount: number;
+      }) =>
+        `"${signalName}" has ${supportingReviewCount} matching reviews, ${confidencePercent}% confidence, severity ${severity}/5, impact ${businessImpact}/5, and a ${priorityScore} priority score.`,
+      nextStepItems: ({
+        signalName,
+        targetMetric,
+        validationExperiment
+      }: {
+        signalName: string;
+        targetMetric: string;
+        validationExperiment: string;
+      }) => [
+        `Review the source quotes behind "${signalName}" and confirm the pattern with support or interview notes.`,
+        `Create a baseline for this metric: ${targetMetric}`,
+        `Run the proposed validation: ${validationExperiment}`
       ],
       noEvidence: 'No direct evidence quote available.'
     }
@@ -399,6 +473,25 @@ export const appCopy = {
       reviewsAnalyzed: (count: number) => `已分析 ${count} 条评论`,
       insightClusters: (count: number) => `${count} 个洞察聚类`,
       roadmapCards: (count: number) => `${count} 张路线图卡片`
+    },
+    reviewsPage: {
+      open: '查看全部评论',
+      eyebrow: '评论记录',
+      title: '全部获取评论',
+      description: '展示当前从内置样本或公开 App Store RSS 中获取到的每一条评论记录。',
+      back: '返回总览',
+      summaryLabel: '获取评论摘要',
+      fetchedCount: (count: number) => `已获取 ${count} 条评论`,
+      analyzedCount: (count: number) => `用于分析 ${count} 条`,
+      empty: '暂无已获取评论。',
+      rating: (rating: number) => `${rating}/5`,
+      version: '版本',
+      source: '来源',
+      untitled: '未命名评论',
+      sourceValues: {
+        'app-store-sample': '内置样本',
+        'app-store-live': '真实 App Store'
+      } satisfies Record<RawReview['source'], string>
     },
     methodology: {
       open: '打开计算说明',
@@ -533,6 +626,7 @@ export const appCopy = {
       },
       timeWindow: '时间范围',
       timeWindowOptions: {
+        all: '全部已获取评论',
         'may-2026': '2026 年 5 月',
         'last-30': '最近 30 天',
         'last-90': '最近 90 天'
@@ -542,24 +636,43 @@ export const appCopy = {
       advancedSettings: '数据控制',
       analyze: '分析评论',
       analyzing: '分析中...',
-      summary: '内置样本：18 条评论记录 - AI 写作品类 - 2026 年 5 月',
+      summary: '内置样本：18 条评论记录 - AI 写作品类',
       status: {
         sampleTitle: '内置演示样本',
         loadingTitle: '正在获取 App Store 评论',
         loadingDetail: '正在读取 Apple 公开评论 RSS...',
+        sources: {
+          appStorePage: 'App Store 页面数据',
+          appleRss: ({
+            fetchedPageCount,
+            maxPages
+          }: {
+            fetchedPageCount: number;
+            maxPages: number;
+          }) => `Apple RSS（${fetchedPageCount}/${maxPages} 页）`
+        },
         liveTitle: '真实 App Store 评论',
         liveDetail: ({
           fetchedCount,
           filteredCount,
+          sourceName,
           timeWindow
         }: {
           fetchedCount: number;
           filteredCount: number;
+          sourceName: string;
           timeWindow: string;
-        }) => `已获取 ${fetchedCount} 条，${timeWindow} 内 ${filteredCount} 条`,
+        }) => `已通过${sourceName}获取 ${fetchedCount} 条；${timeWindow} 匹配 ${filteredCount} 条并用于分析。`,
         emptyTitle: '所选时间范围内暂无评论',
-        emptyDetail: ({ fetchedCount, timeWindow }: { fetchedCount: number; timeWindow: string }) =>
-          `已获取 ${fetchedCount} 条，但 ${timeWindow} 内为 0 条。可以切换到更宽的时间范围。`,
+        emptyDetail: ({
+          fetchedCount,
+          sourceName,
+          timeWindow
+        }: {
+          fetchedCount: number;
+          sourceName: string;
+          timeWindow: string;
+        }) => `已通过${sourceName}获取 ${fetchedCount} 条，但 ${timeWindow} 匹配 0 条。可以切换到“全部已获取评论”或更宽的时间范围。`,
         errorTitle: '真实评论获取失败',
         unknownError: '未知抓取错误。'
       }
@@ -567,7 +680,7 @@ export const appCopy = {
     dashboard: {
       eyebrow: '证据综合',
       title: '评论智能分析',
-      description: '在生成路线图建议前，先结构化呈现反复出现的用户信号。',
+      description: '基于当前时间范围内用于分析的评论，结构化呈现反复出现的用户信号。',
       noRating: '暂无评分',
       averageRating: (rating: string) => `${rating} 平均评分`,
       noEvidence: '暂无可用评论证据。',
@@ -656,7 +769,7 @@ export const appCopy = {
     roadmap: {
       eyebrow: '决策输出',
       title: '路线图决策',
-      description: '每条建议都保留证据、评分逻辑和下一步验证动作。',
+      description: '每条建议都来自当前时间范围内的聚类结果，并保留证据、评分逻辑和下一步验证动作。',
       empty: '还没有路线图决策。添加评论证据后即可生成建议。',
       typeLabels: {
         fix: '修复',
@@ -743,12 +856,46 @@ export const appCopy = {
       riskAndTradeoff: '风险与取舍',
       evaluationDimensions: '评估维度',
       nextSteps: '下一步行动',
-      contextBody: '这份 brief 将接近公开 App Store 反馈的评论样本转化为一个 AI 写作应用的产品决策。',
-      whyNowBody: '首要机会同时具备重复证据、高严重度，以及对信任或留存的直接影响。',
-      nextStepItems: [
-        '用客服记录或用户访谈确认最高优先级证据主题。',
-        '面向选定用户场景发布最小可验证干预。',
-        '在实验窗口结束后复盘成功指标。'
+      contextBody: ({
+        clusterCount,
+        decisionTitle,
+        reviewCount,
+        signalName
+      }: {
+        clusterCount: number;
+        decisionTitle: string;
+        reviewCount: number;
+        signalName: string;
+      }) =>
+        `这份 brief 基于当前 ${reviewCount} 条已分析评论和 ${clusterCount} 个洞察聚类生成，聚焦「${decisionTitle}」，因为最高优先级机会来自「${signalName}」。`,
+      whyNowBody: ({
+        businessImpact,
+        confidencePercent,
+        priorityScore,
+        severity,
+        signalName,
+        supportingReviewCount
+      }: {
+        businessImpact: number;
+        confidencePercent: number;
+        priorityScore: number;
+        severity: number;
+        signalName: string;
+        supportingReviewCount: number;
+      }) =>
+        `「${signalName}」下有 ${supportingReviewCount} 条相关评论，置信度 ${confidencePercent}%，严重度 ${severity}/5，业务影响 ${businessImpact}/5，优先级分数 ${priorityScore}。`,
+      nextStepItems: ({
+        signalName,
+        targetMetric,
+        validationExperiment
+      }: {
+        signalName: string;
+        targetMetric: string;
+        validationExperiment: string;
+      }) => [
+        `复核「${signalName}」背后的原始评论，并用客服记录或访谈确认是否为稳定模式。`,
+        `为成功指标建立当前基线：${targetMetric}`,
+        `执行验证实验：${validationExperiment}`
       ],
       noEvidence: '暂无直接证据引用。'
     }

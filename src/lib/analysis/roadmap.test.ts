@@ -108,6 +108,7 @@ describe('generateRoadmapCards', () => {
       targetMetric: '降低每 100 条评论中的打卡/小队异常投诉数。'
     });
     expect(cards[0].validationExperiment).toMatch(/打卡与小队页/);
+    expect(cards[0].risks).toMatch(/打卡状态与小队活跃判定异常/);
     expect(cards[0].recommendationDimensions[0].value).toBe('修复打卡状态与小队活跃判定异常');
     expect(cards[0].metricDimensions[0].value).toBe('打卡/小队异常投诉率');
   });

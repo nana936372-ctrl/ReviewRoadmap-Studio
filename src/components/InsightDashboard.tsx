@@ -36,7 +36,11 @@ export function InsightDashboard({ analysis, copy }: InsightDashboardProps) {
         });
   const reviewsById = new Map(analysis.reviews.map((review) => [review.id, review]));
   const sentimentRows = topClusters.map((cluster) => {
-    const relatedSignals = analysis.signals.filter((signal) => signal.labels.includes(cluster.id as SignalLabel));
+    const clusterReviewIds = new Set(cluster.reviewIds ?? []);
+    const relatedSignals =
+      clusterReviewIds.size > 0
+        ? analysis.signals.filter((signal) => clusterReviewIds.has(signal.reviewId))
+        : analysis.signals.filter((signal) => signal.labels.includes(cluster.id as SignalLabel));
 
     return {
       id: cluster.id,

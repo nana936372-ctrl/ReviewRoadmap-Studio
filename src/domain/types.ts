@@ -14,7 +14,7 @@ export type RoadmapType = 'fix' | 'improve' | 'explore';
 
 export type Language = 'en' | 'zh';
 
-export type TimeWindow = 'may-2026' | 'last-30' | 'last-90';
+export type TimeWindow = 'all' | 'may-2026' | 'last-30' | 'last-90';
 
 export interface EvaluationDimension {
   id: string;
@@ -53,6 +53,7 @@ export interface InsightCluster {
   name: string;
   description: string;
   labels: SignalLabel[];
+  reviewIds?: string[];
   reviewCount: number;
   averageRating: number;
   representativeQuotes: string[];

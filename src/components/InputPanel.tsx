@@ -87,6 +87,7 @@ export function InputPanel({
               value={timeWindow}
               onChange={(event) => onTimeWindowChange(event.target.value as TimeWindow)}
             >
+              <option value="all">{copy.timeWindowOptions.all}</option>
               <option value="may-2026">{copy.timeWindowOptions['may-2026']}</option>
               <option value="last-30">{copy.timeWindowOptions['last-30']}</option>
               <option value="last-90">{copy.timeWindowOptions['last-90']}</option>

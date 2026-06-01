@@ -82,4 +82,19 @@ describe('classifyReview', () => {
     expect(pricingSignal.labels).toContain('pricing_friction');
     expect(delightSignal.labels).toEqual(['delight']);
   });
+
+  it('does not infer a bug from positive Chinese learning praise with broad negation words', () => {
+    const signal = classifyReview({
+      ...baseReview,
+      id: 'cn4',
+      rating: 5,
+      title: '百词斩帮助很大',
+      body: '百词斩的优势在于图文混记，我们无法遗忘母语是学英语最大的障碍，推荐给朋友。',
+      normalizedText: '百词斩帮助很大 百词斩的优势在于图文混记，我们无法遗忘母语是学英语最大的障碍，推荐给朋友。'
+    });
+
+    expect(signal.labels).not.toContain('bug');
+    expect(signal.labels).toEqual(['delight']);
+    expect(signal.urgency).toBe('low');
+  });
 });

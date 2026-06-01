@@ -113,6 +113,7 @@ export function buildInsightClusters(
         name: copy.name,
         description: copy.description,
         labels: Array.from(new Set(clusterSignals.flatMap((signal) => signal.labels))),
+        reviewIds: clusterSignals.map((signal) => signal.reviewId),
         reviewCount: clusterSignals.length,
         averageRating,
         representativeQuotes: clusterSignals.slice(0, 3).map((signal) => signal.quote),

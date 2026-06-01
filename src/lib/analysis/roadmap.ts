@@ -32,6 +32,16 @@ interface OpportunityDetail {
   isSpecific: boolean;
 }
 
+export interface SemanticRoadmapDecision {
+  type: RoadmapType;
+  clusterId: string;
+  title: string;
+  recommendation: string;
+  targetMetric: string;
+  validationExperiment: string;
+  risks: string;
+}
+
 type OpportunityThemeCopy = Record<Language, Record<RoadmapType, Omit<OpportunityDetail, 'isSpecific'>>>;
 
 const ROADMAP_COPY: Record<
@@ -440,15 +450,15 @@ const OPPORTUNITY_THEMES: Array<{
     copy: {
       en: {
         fix: {
-          title: 'Improve content quality and output trust',
+          title: 'Review repeated content-experience signals',
           recommendation:
-            'Fix the content or output quality gaps that make users doubt whether the product can support the core job.',
-          targetMetric: 'Reduce content-quality or output-trust complaints per 100 reviews.',
+            'Only treat repeated content or learning-experience mentions as a fix when the source reviews explicitly describe a problem.',
+          targetMetric: 'Track explicit content or learning-experience problem mentions per 100 reviews.',
           validationExperiment:
-            'Patch the most cited quality gap for a subset of users and compare related low-star mentions over two weeks.',
-          recommendationValue: 'Improve content quality and output trust',
-          metricValue: 'Content quality complaint rate',
-          experimentValue: 'Quality-gap patch rollout'
+            'Manually review the cited comments first, then test a focused change only if the evidence contains a clear problem statement.',
+          recommendationValue: 'Review repeated content-experience signals',
+          metricValue: 'Explicit content-experience issue rate',
+          experimentValue: 'Source-comment review before rollout'
         },
         improve: {
           title: 'Double down on proven content value',
@@ -475,13 +485,13 @@ const OPPORTUNITY_THEMES: Array<{
       },
       zh: {
         fix: {
-          title: '提升内容质量与结果可信度',
-          recommendation: '修复让用户怀疑核心任务能否完成的内容或结果质量问题。',
-          targetMetric: '降低每 100 条评论中的内容质量或结果可信度投诉数。',
-          validationExperiment: '面向部分用户修补最常被提到的质量缺口，并比较两周内相关低星反馈变化。',
-          recommendationValue: '提升内容质量与结果可信度',
-          metricValue: '内容质量投诉率',
-          experimentValue: '质量缺口修复小流量验证'
+          title: '复核被反复提到的学习体验',
+          recommendation: '只有当原始评论明确描述问题时，才把学习内容或体验信号转为修复项。',
+          targetMetric: '跟踪每 100 条评论中明确提出的学习体验问题数。',
+          validationExperiment: '先人工复核被引用评论，只有出现明确问题描述时再做聚焦修复验证。',
+          recommendationValue: '复核被反复提到的学习体验',
+          metricValue: '明确学习体验问题率',
+          experimentValue: '原始评论复核后再小流量验证'
         },
         improve: {
           title: '放大已验证的内容价值',
@@ -883,6 +893,42 @@ function createDecisionDimensions(
   };
 }
 
+function createRiskStatement(
+  type: RoadmapType,
+  cluster: InsightCluster,
+  language: Language,
+  opportunity: OpportunityDetail,
+  fallback: RoadmapCopy
+): string {
+  if (!opportunity.isSpecific) {
+    return fallback.risks;
+  }
+
+  const theme = opportunity.recommendationValue;
+
+  if (language === 'zh') {
+    if (type === 'fix') {
+      return `如果只修表层提示而不处理「${theme}」，「${cluster.name}」中的信任问题仍会继续；取舍是短期推迟部分新功能，但优先保护留存与付费信任。`;
+    }
+
+    if (type === 'improve') {
+      return `如果围绕「${theme}」一次扩展太多能力，容易把明确机会做成泛化需求；第一版应只验证最强证据对应的一个场景。`;
+    }
+
+    return `如果过早投入完整建设，「${theme}」可能会消耗资源但无法证明用户真实需要；应先用小实验确认行为变化。`;
+  }
+
+  if (type === 'fix') {
+    return `If "${theme}" is treated as surface messaging only, the trust problem inside ${cluster.name} can continue; the tradeoff is delaying some visible feature work to protect retention and paid trust.`;
+  }
+
+  if (type === 'improve') {
+    return `If "${theme}" expands into too many capabilities at once, a clear opportunity can become a broad backlog; the first version should validate one evidence-backed scenario.`;
+  }
+
+  return `If "${theme}" becomes a full build too early, it may consume roadmap capacity before the user need is proven; validate behavior change with a small experiment first.`;
+}
+
 function createCardPayload(
   type: RoadmapType,
   cluster: InsightCluster,
@@ -908,7 +954,7 @@ function createCardPayload(
     supportingReviewCount: cluster.reviewCount,
     targetMetric: opportunity.targetMetric,
     validationExperiment: opportunity.validationExperiment,
-    risks: copy.risks,
+    risks: createRiskStatement(type, cluster, language, opportunity, copy),
     confidence: cluster.confidence
   };
 }
@@ -939,4 +985,108 @@ export function generateRoadmapCards(clusters: InsightCluster[], language: Langu
   };
 
   return TYPE_ORDER.map((type) => createCard(type, selected[type], language));
+}
+
+function semanticDimensionRationale(
+  language: Language,
+  decision: SemanticRoadmapDecision,
+  cluster: InsightCluster,
+  quote: string
+): string {
+  if (language === 'zh') {
+    return `LLM 只负责语义归纳：该决策来自「${cluster.name}」及其绑定评论证据，例如“${quote}”；数值和排序由本地公式重新计算。`;
+  }
+
+  return `The LLM supplies semantic synthesis only: this decision comes from "${cluster.name}" and its cited review evidence, including "${quote}"; numeric scoring is recalculated locally.`;
+}
+
+function semanticMetricRationale(language: Language, decision: SemanticRoadmapDecision, cluster: InsightCluster): string {
+  if (language === 'zh') {
+    return `该指标由 LLM 根据「${cluster.name}」的语义给出，但后续是否达成需要用真实产品数据或评论占比验证。`;
+  }
+
+  return `This metric is proposed from the semantic meaning of "${cluster.name}" and should be validated with product data or review-share changes.`;
+}
+
+function semanticExperimentRationale(language: Language, decision: SemanticRoadmapDecision): string {
+  if (language === 'zh') {
+    return `该实验限定为下一步验证动作，避免把评论语义直接扩展成完整路线图承诺。`;
+  }
+
+  return 'This experiment is kept as the next validation action so review semantics do not become an untested roadmap commitment.';
+}
+
+function semanticRiskRationale(language: Language, decision: SemanticRoadmapDecision): string {
+  if (language === 'zh') {
+    return `风险与取舍来自 LLM 对证据边界的总结，必须和引用评论一起阅读。`;
+  }
+
+  return 'The risk statement is a semantic summary of evidence boundaries and should be read together with the cited reviews.';
+}
+
+export function generateRoadmapCardsFromSemanticDecisions(
+  clusters: InsightCluster[],
+  decisions: SemanticRoadmapDecision[],
+  language: Language = 'en'
+): RoadmapCard[] {
+  if (clusters.length === 0) return [];
+
+  const fallbackCards = generateRoadmapCards(clusters, language);
+  const cardsByType = new Map(fallbackCards.map((card) => [card.type, card]));
+
+  return TYPE_ORDER.map((type) => {
+    const fallbackCard = cardsByType.get(type) ?? fallbackCards[0];
+    const decision = decisions.find((item) => item.type === type);
+
+    if (!decision) {
+      return fallbackCard;
+    }
+
+    const cluster = clusters.find((item) => item.id === decision.clusterId) ?? clusters[0];
+    const quote = cluster.representativeQuotes[0] ?? (language === 'zh' ? '暂无代表性证据' : 'No representative quote');
+    const baseCard = createCard(type, cluster, language);
+
+    return {
+      ...baseCard,
+      id: `semantic-${type}-${cluster.id}`,
+      title: decision.title || baseCard.title,
+      recommendation: decision.recommendation || baseCard.recommendation,
+      targetMetric: decision.targetMetric || baseCard.targetMetric,
+      validationExperiment: decision.validationExperiment || baseCard.validationExperiment,
+      risks: decision.risks || baseCard.risks,
+      evidenceQuotes: cluster.representativeQuotes,
+      supportingReviewCount: cluster.reviewCount,
+      userScenario: cluster.suspectedUserScenario,
+      confidence: cluster.confidence,
+      recommendationDimensions: [
+        {
+          ...baseCard.recommendationDimensions[0],
+          value: decision.title || baseCard.title,
+          rationale: semanticDimensionRationale(language, decision, cluster, quote),
+          evidence: cluster.representativeQuotes.slice(0, 2)
+        }
+      ],
+      metricDimensions: [
+        {
+          ...baseCard.metricDimensions[0],
+          value: decision.targetMetric || baseCard.targetMetric,
+          rationale: semanticMetricRationale(language, decision, cluster)
+        }
+      ],
+      experimentDimensions: [
+        {
+          ...baseCard.experimentDimensions[0],
+          value: decision.validationExperiment || baseCard.validationExperiment,
+          rationale: semanticExperimentRationale(language, decision)
+        }
+      ],
+      riskDimensions: [
+        {
+          ...baseCard.riskDimensions[0],
+          value: decision.risks || baseCard.risks,
+          rationale: semanticRiskRationale(language, decision)
+        }
+      ]
+    };
+  });
 }

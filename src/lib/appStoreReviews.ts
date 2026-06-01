@@ -8,9 +8,17 @@ export interface AppStoreIdentity {
 export interface AppStoreReviewFetchResult {
   feedUrl: string;
   identity: AppStoreIdentity;
+  fetchedPageCount: number;
   fetchedReviews: RawReview[];
+  maxPages: number;
   reviews: RawReview[];
+  sourceKind: 'app-store-page' | 'apple-rss';
 }
+
+type AppStorePageProxyResponse = {
+  feedUrl?: unknown;
+  reviews?: unknown;
+};
 
 type AppleFeedLabel = {
   label?: unknown;
@@ -27,6 +35,8 @@ type AppleCustomerReviewFeed = {
 const MAY_2026_START = Date.parse('2026-05-01T00:00:00.000Z');
 const JUNE_2026_START = Date.parse('2026-06-01T00:00:00.000Z');
 const DAY_MS = 24 * 60 * 60 * 1000;
+const APPLE_RSS_PAGE_SIZE = 50;
+const MAX_REVIEW_PAGES = 10;
 
 function getLabel(value: unknown): string {
   if (typeof value === 'string') return value;
@@ -76,10 +86,13 @@ export function parseAppStoreUrl(input: string): AppStoreIdentity {
   }
 }
 
-export function buildCustomerReviewsUrl({ appId, country }: AppStoreIdentity): string {
-  return `https://itunes.apple.com/rss/customerreviews/id=${encodeURIComponent(
+export function buildCustomerReviewsUrl({ appId, country }: AppStoreIdentity, page = 1): string {
+  const safePage = Math.max(1, Math.min(MAX_REVIEW_PAGES, Math.floor(page)));
+  const safeCountry = country || 'us';
+
+  return `https://itunes.apple.com/${encodeURIComponent(safeCountry)}/rss/customerreviews/page=${safePage}/id=${encodeURIComponent(
     appId
-  )}/sortBy=mostRecent/json?cc=${encodeURIComponent(country || 'us')}`;
+  )}/sortBy=mostRecent/json`;
 }
 
 export function parseCustomerReviewFeed(feed: unknown): RawReview[] {
@@ -119,6 +132,10 @@ export function filterReviewsByTimeWindow(
   timeWindow: TimeWindow,
   now: Date = new Date()
 ): RawReview[] {
+  if (timeWindow === 'all') {
+    return reviews;
+  }
+
   if (timeWindow === 'may-2026') {
     return reviews.filter((review) => isInRange(review.date, MAY_2026_START, JUNE_2026_START));
   }
@@ -130,30 +147,113 @@ export function filterReviewsByTimeWindow(
   return reviews.filter((review) => isInRange(review.date, startMs, endMs));
 }
 
-export async function fetchAppStoreReviews(
+function isRawReview(value: unknown): value is RawReview {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  const review = value as RawReview;
+  return (
+    typeof review.id === 'string' &&
+    review.source === 'app-store-live' &&
+    [1, 2, 3, 4, 5].includes(review.rating) &&
+    typeof review.title === 'string' &&
+    typeof review.body === 'string' &&
+    typeof review.date === 'string' &&
+    typeof review.appVersion === 'string'
+  );
+}
+
+async function fetchAppStorePageProxy(
   appUrl: string,
+  identity: AppStoreIdentity,
   timeWindow: TimeWindow,
-  now: Date = new Date()
-): Promise<AppStoreReviewFetchResult> {
-  const identity = parseAppStoreUrl(appUrl);
-  const feedUrl = buildCustomerReviewsUrl(identity);
-  const response = await fetch(feedUrl, {
+  now: Date
+): Promise<AppStoreReviewFetchResult | null> {
+  const response = await fetch(`/api/app-store-reviews?appUrl=${encodeURIComponent(appUrl)}`, {
     headers: {
       Accept: 'application/json'
     }
   });
 
   if (!response.ok) {
-    throw new Error(`Apple review feed returned ${response.status}.`);
+    return null;
   }
 
-  const feed = await response.json();
-  const fetchedReviews = parseCustomerReviewFeed(feed);
+  const payload = (await response.json()) as AppStorePageProxyResponse;
+  const fetchedReviews = Array.isArray(payload.reviews) ? payload.reviews.filter(isRawReview) : [];
+
+  if (fetchedReviews.length === 0) {
+    return null;
+  }
+
+  return {
+    feedUrl: typeof payload.feedUrl === 'string' ? payload.feedUrl : appUrl,
+    fetchedPageCount: 1,
+    identity,
+    fetchedReviews,
+    maxPages: 1,
+    reviews: filterReviewsByTimeWindow(fetchedReviews, timeWindow, now),
+    sourceKind: 'app-store-page'
+  };
+}
+
+export async function fetchAppStoreReviews(
+  appUrl: string,
+  timeWindow: TimeWindow,
+  now: Date = new Date()
+): Promise<AppStoreReviewFetchResult> {
+  const identity = parseAppStoreUrl(appUrl);
+  const pageProxyResult = await fetchAppStorePageProxy(appUrl, identity, timeWindow, now).catch(() => null);
+
+  if (pageProxyResult) {
+    return pageProxyResult;
+  }
+
+  const fetchedReviews: RawReview[] = [];
+  const seenReviewIds = new Set<string>();
+  let fetchedPageCount = 0;
+  let feedUrl = buildCustomerReviewsUrl(identity, 1);
+
+  for (let page = 1; page <= MAX_REVIEW_PAGES; page += 1) {
+    feedUrl = buildCustomerReviewsUrl(identity, page);
+
+    const response = await fetch(feedUrl, {
+      headers: {
+        Accept: 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Apple review feed returned ${response.status}.`);
+    }
+
+    fetchedPageCount = page;
+
+    const feed = await response.json();
+    const pageReviews = parseCustomerReviewFeed(feed);
+
+    for (const review of pageReviews) {
+      if (seenReviewIds.has(review.id)) {
+        continue;
+      }
+
+      seenReviewIds.add(review.id);
+      fetchedReviews.push(review);
+    }
+
+    if (pageReviews.length < APPLE_RSS_PAGE_SIZE) {
+      break;
+    }
+  }
 
   return {
     feedUrl,
+    fetchedPageCount,
     identity,
     fetchedReviews,
-    reviews: filterReviewsByTimeWindow(fetchedReviews, timeWindow, now)
+    maxPages: MAX_REVIEW_PAGES,
+    reviews: filterReviewsByTimeWindow(fetchedReviews, timeWindow, now),
+    sourceKind: 'apple-rss'
   };
 }

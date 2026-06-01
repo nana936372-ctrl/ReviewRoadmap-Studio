@@ -44,6 +44,25 @@ export function DecisionBrief({ analysis, copy }: DecisionBriefProps) {
   const selectedCluster = topCluster;
   const selectedDimensions = briefEvaluationDimensions(selectedCard);
   const evidenceQuotes = selectedCard.evidenceQuotes.slice(0, 2);
+  const briefContext = copy.contextBody({
+    clusterCount: analysis.clusters.length,
+    decisionTitle: selectedCard.title,
+    reviewCount: analysis.reviews.length,
+    signalName: selectedCluster.name
+  });
+  const whyNow = copy.whyNowBody({
+    businessImpact: selectedCard.scoringFactors.businessImpact,
+    confidencePercent: Math.round(selectedCard.confidence * 100),
+    priorityScore: selectedCard.priorityScore,
+    severity: selectedCard.scoringFactors.severity,
+    signalName: selectedCluster.name,
+    supportingReviewCount: selectedCard.supportingReviewCount
+  });
+  const nextStepItems = copy.nextStepItems({
+    signalName: selectedCluster.name,
+    targetMetric: selectedCard.targetMetric,
+    validationExperiment: selectedCard.validationExperiment
+  });
 
   function downloadBrief() {
     const dimensionMarkdown = selectedDimensions
@@ -51,14 +70,14 @@ export function DecisionBrief({ analysis, copy }: DecisionBriefProps) {
       .join('\n');
     const evidenceMarkdown =
       evidenceQuotes.map((quote) => `- ${quote}`).join('\n') || `- ${copy.noEvidence}`;
-    const nextStepsMarkdown = copy.nextStepItems.map((item) => `- ${item}`).join('\n');
+    const nextStepsMarkdown = nextStepItems.map((item) => `- ${item}`).join('\n');
     const markdown = [
       `# ${copy.markdownTitle}`,
-      `## ${copy.context}\n${copy.contextBody}`,
+      `## ${copy.context}\n${briefContext}`,
       `## ${copy.problemSignal}\n${selectedCluster.description}`,
       `## ${copy.userScenario}\n${selectedCard.userScenario}`,
       `## ${copy.recommendedDecision}\n${selectedCard.recommendation}`,
-      `## ${copy.whyNow}\n${copy.whyNowBody}`,
+      `## ${copy.whyNow}\n${whyNow}`,
       `## ${copy.successMetric}\n${selectedCard.targetMetric}`,
       `## ${copy.nextExperiment}\n${selectedCard.validationExperiment}`,
       `## ${copy.riskAndTradeoff}\n${selectedCard.risks}`,
@@ -97,7 +116,7 @@ export function DecisionBrief({ analysis, copy }: DecisionBriefProps) {
       <div className="brief-summary">
         <article>
           <h3>{copy.context}</h3>
-          <p>{copy.contextBody}</p>
+          <p>{briefContext}</p>
         </article>
         <article>
           <h3>{copy.recommendedDecision}</h3>
@@ -105,7 +124,7 @@ export function DecisionBrief({ analysis, copy }: DecisionBriefProps) {
         </article>
         <article>
           <h3>{copy.whyNow}</h3>
-          <p>{copy.whyNowBody}</p>
+          <p>{whyNow}</p>
         </article>
       </div>
 
@@ -154,7 +173,7 @@ export function DecisionBrief({ analysis, copy }: DecisionBriefProps) {
         <article>
           <h3>{copy.nextSteps}</h3>
           <ul className="brief-dimensions">
-            {copy.nextStepItems.map((item) => (
+            {nextStepItems.map((item) => (
               <li key={item}>
                 <span>{item}</span>
               </li>
